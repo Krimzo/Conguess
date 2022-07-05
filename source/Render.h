@@ -18,8 +18,7 @@ namespace Render {
 	inline kl::dx::view::shader earthCloudsTexture = nullptr;
 	inline kl::dx::view::shader earthNormalMap = nullptr;
 	inline kl::dx::view::shader earthRoughnessMap = nullptr;
-	inline kl::dx::view::shader starsMilkyTexture = nullptr;
-
+	inline kl::dx::view::shader earthBoundariesMap = nullptr;
 
 	void Initialize();
 	void Update();

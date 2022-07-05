@@ -44,6 +44,10 @@ void Render::Initialize() {
 	Game::Log("Loading earth roughness map");
 	earthRoughnessMap = Game::gpu->newShaderView(Game::gpu->newTexture(
 		kl::image(std::string("resource/textures/earth_roughness.png"))));
+
+	Game::Log("Loading earth boundaries map");
+	earthBoundariesMap = Game::gpu->newShaderView(Game::gpu->newTexture(
+		kl::image(std::string("resource/textures/earth_boundaries.png"))));
 }
 
 void Render::Update() {
@@ -74,6 +78,7 @@ void Render::Update() {
 	Game::gpu->bindPixelShaderView(earthCloudsTexture, 2);
 	Game::gpu->bindPixelShaderView(earthNormalMap, 3);
 	Game::gpu->bindPixelShaderView(earthRoughnessMap, 4);
+	Game::gpu->bindPixelShaderView(earthBoundariesMap, 5);
 
 	Game::gpu->draw(mesh);
 }

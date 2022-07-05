@@ -32,12 +32,12 @@ void Start() {
 	Game::window.resize = Resize;
 	Game::camera.position = Game::camera.forward() * -2.0f;
 
+	Data::Initialize();
+
 	Input::Initialize();
 	Skybox::Initialize();
 	Render::Initialize();
 	Postprocess::Initialize();
-
-	Data::Initialize();
 
 	Game::window.title("World Guesser");
 

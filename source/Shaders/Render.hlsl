@@ -39,6 +39,7 @@ Texture2D earthNightMap : register(t1);
 Texture2D earthCloudsMap : register(t2);
 Texture2D earthNormalMap : register(t3);
 Texture2D earthRoughnessMap : register(t4);
+Texture2D earthBoundariesMap : register(t5);
 
 float3 GetFragNormal(float3 fragPosition, float3 fragNormal, float2 fragTexture)
 {
@@ -87,12 +88,17 @@ PS_OUT pShader(VS_OUT data)
     const float2 newCloudCoords = float2(data.textur.x - miscData.x, data.textur.y);
     const float4 cloudColor = earthCloudsMap.Sample(defaultSampler, newCloudCoords);
     
+    const float4 boundsColor = earthBoundariesMap.Sample(defaultSampler, data.textur);
+    
     float4 finalColor = dayColor * fullLight;
     finalColor = lerp(nightColor, finalColor, diffuseFactor);
     finalColor = lerp(finalColor, cloudColor, cloudColor.r);
+    finalColor = lerp(finalColor, boundsColor, boundsColor.r);
+    
+    const float4 index = { 1.0f, boundsColor.r, 1.0f, 1.0f };
     
     PS_OUT outData;
     outData.color = finalColor;
-    outData.index = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    outData.index = index;
     return outData;
 }
