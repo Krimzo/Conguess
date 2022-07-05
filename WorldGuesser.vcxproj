@@ -178,6 +178,7 @@
     <ClCompile Include="KLibrary\window\mouse.cpp" />
     <ClCompile Include="KLibrary\window\window.cpp" />
     <ClCompile Include="KLibrary\window\window_private.cpp" />
+    <ClCompile Include="source\Data.cpp" />
     <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\Input.cpp" />
     <ClCompile Include="source\Postprocess.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="KLibrary\window\keys.h" />
     <ClInclude Include="KLibrary\window\mouse.h" />
     <ClInclude Include="KLibrary\window\window.h" />
+    <ClInclude Include="source\Data.h" />
     <ClInclude Include="source\Game.h" />
     <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\Postprocess.h" />

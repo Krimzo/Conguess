@@ -18,7 +18,7 @@ kl::ray GetMouseRay() {
 
 void SaveLastValues() {
 	lastIntersect = GetMouseRay().intersect(sphere, lastDirection, _ignore);
-	lastDirection = (lastDirection - sphere.center).normalize();
+	lastDirection = lastDirection.normalize();
 }
 
 void Input::Initialize() {
@@ -28,7 +28,7 @@ void Input::Initialize() {
 	Game::window.mouse.lmb.down = [&]() {
 		kl::float3 currentDirection;
 		if (lastIntersect && GetMouseRay().intersect(sphere, currentDirection, _ignore)) {
-			currentDirection = (currentDirection - sphere.center).normalize();
+			currentDirection = currentDirection.normalize();
 
 			const kl::float2 deltaAngles = {
 				kl::float2(lastDirection.z, lastDirection.y).angle({ currentDirection.z, currentDirection.y }, true),
@@ -59,4 +59,15 @@ void Input::Update() {
 	const int scrollDelta = lastScroll - Game::window.mouse.scroll;
 	Game::camera.fov = kl::math::minmax(Game::camera.fov + scrollDelta * 5.0f, 5.0f, 90.0f);
 	lastScroll = Game::window.mouse.scroll;
+
+	kl::float3 mouseSphereIntersect;
+	GetMouseRay().intersect(sphere, mouseSphereIntersect, _ignore);
+
+	const kl::float3 mouseSphereIntersectNoY = kl::float3(mouseSphereIntersect.x, 0.0f, mouseSphereIntersect.z);
+	mouseGeoLocation.x = mouseSphereIntersect.angle(mouseSphereIntersectNoY);
+	mouseGeoLocation.x *= (mouseSphereIntersect.y < 0.0f) ? -1.0f : 1.0f;
+
+	const kl::float3 greenwich = (kl::mat4::rotation(Game::sphereRotation) * kl::float4(1.0f, 0.0f, 0.0f, 1.0f)).xyz;
+	mouseGeoLocation.y = kl::float2(greenwich.x, greenwich.z).angle(
+		kl::float2(mouseSphereIntersectNoY.x, mouseSphereIntersectNoY.z), true);
 }

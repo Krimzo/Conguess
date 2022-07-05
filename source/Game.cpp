@@ -3,8 +3,10 @@
 #include "Render.h"
 #include "Skybox.h"
 #include "Postprocess.h"
+#include "Data.h"
 
 
+static constexpr bool DEBUG_TIMES = false;
 static kl::timer timer = {};
 
 void Game::Log(const std::string& message) {
@@ -35,6 +37,8 @@ void Start() {
 	Render::Initialize();
 	Postprocess::Initialize();
 
+	Data::Initialize();
+
 	timer.reset();
 }
 
@@ -60,12 +64,14 @@ void Update() {
 
 	Game::gpu->swap(true);
 
-	Game::Log(kl::format(std::fixed, std::setprecision(2),
-		"Skybox[", skyboxTime * 1e3, "] ",
-		"Render[", renderTime * 1e3, "] ",
-		"Postprocess[", postprocessTime * 1e3, "] ",
-		"Frame(", Game::deltaT * 1e3, ")"
-	));
+	if constexpr (DEBUG_TIMES) {
+		Game::Log(kl::format(std::fixed, std::setprecision(2),
+			"Skybox[", skyboxTime * 1e3, "] ",
+			"Render[", renderTime * 1e3, "] ",
+			"Postprocess[", postprocessTime * 1e3, "] ",
+			"Frame(", Game::deltaT * 1e3, ")"
+		));
+	}
 }
 
 void End() {
