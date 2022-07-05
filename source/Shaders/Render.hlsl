@@ -30,6 +30,7 @@ cbuffer PS_CB : register(b0)
 {
     float4 sunDirection;
     float4 cameraPosition;
+    float4 miscData;
 }
 
 SamplerState defaultSampler : register(s0);
@@ -38,7 +39,6 @@ Texture2D earthNightMap : register(t1);
 Texture2D earthCloudsMap : register(t2);
 Texture2D earthNormalMap : register(t3);
 Texture2D earthRoughnessMap : register(t4);
-Texture2D starsMilkyMap : register(t5);
 
 float3 GetFragNormal(float3 fragPosition, float3 fragNormal, float2 fragTexture)
 {
@@ -77,10 +77,13 @@ float4 pShader(VS_OUT data) : SV_TARGET0
     
     const float4 dayColor = earthDayMap.Sample(defaultSampler, data.textur);
     const float4 nightColor = earthNightMap.Sample(defaultSampler, data.textur);
-    const float4 cloudColor = earthCloudsMap.Sample(defaultSampler, data.textur);
     
-    float4 baseColor = lerp(nightColor, dayColor, diffuseFactor);
-    baseColor = lerp(baseColor, cloudColor, cloudColor.r);
+    const float2 newCloudCoords = float2(data.textur.x - miscData.x, data.textur.y);
+    const float4 cloudColor = earthCloudsMap.Sample(defaultSampler, newCloudCoords);
     
-    return baseColor * fullLight;
+    float4 finalColor = dayColor * fullLight;
+    finalColor = lerp(nightColor, finalColor, diffuseFactor);
+    finalColor = lerp(finalColor, cloudColor, cloudColor.r);
+    
+    return finalColor;
 }

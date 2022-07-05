@@ -7,9 +7,14 @@ namespace Render {
 	inline kl::window window;
 
 	inline kl::reference<kl::gpu> gpu;
+
+	inline kl::dx::state::depth defaultDepth = nullptr;
+	inline kl::dx::state::depth skyboxDepth = nullptr;
+
 	inline kl::shaders renderShaders;
 
 	inline kl::dx::mesh sphereMesh = nullptr;
+
 	inline kl::dx::view::shader earthDayTexture = nullptr;
 	inline kl::dx::view::shader earthNightTexture = nullptr;
 	inline kl::dx::view::shader earthCloudsTexture = nullptr;
@@ -22,16 +27,6 @@ namespace Render {
 	inline kl::timer timer;
 	inline float deltaT = 0.0f;
 	inline float elapsedT = 0.0f;
-
-	struct VS_CB {
-		kl::mat4 wMatrix;
-		kl::mat4 vpMatrix;
-	};
-
-	struct PS_CB {
-		kl::float4 sunDirection;
-		kl::float4 cameraPosition;
-	};
 
 	void Start();
 	void Update();

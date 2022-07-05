@@ -181,6 +181,7 @@
     <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\Input.cpp" />
     <ClCompile Include="source\Render.cpp" />
+    <ClCompile Include="source\Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KLibrary\gpu\dx_types.h" />
@@ -220,6 +221,7 @@
     <ClInclude Include="source\Game.h" />
     <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\Render.h" />
+    <ClInclude Include="source\Skybox.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
