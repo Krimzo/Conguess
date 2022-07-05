@@ -39,6 +39,8 @@ void Start() {
 
 	Data::Initialize();
 
+	Game::window.title("World Guesser");
+
 	timer.reset();
 }
 

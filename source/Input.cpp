@@ -1,5 +1,6 @@
 #include "Input.h"
 #include "Game.h"
+#include "Data.h"
 
 
 static float _ignore = 0;
@@ -68,6 +69,15 @@ void Input::Update() {
 	mouseGeoLocation.x *= (mouseSphereIntersect.y < 0.0f) ? -1.0f : 1.0f;
 
 	const kl::float3 greenwich = (kl::mat4::rotation(Game::sphereRotation) * kl::float4(1.0f, 0.0f, 0.0f, 1.0f)).xyz;
-	mouseGeoLocation.y = kl::float2(greenwich.x, greenwich.z).angle(
-		kl::float2(mouseSphereIntersectNoY.x, mouseSphereIntersectNoY.z), true);
+	mouseGeoLocation.y = kl::float2(greenwich.x, greenwich.z).angle(kl::float2(mouseSphereIntersectNoY.x, mouseSphereIntersectNoY.z), true);
+
+	for (auto& country : Data::countries) {
+		for (auto& polygon : country.polygons) {
+			if (polygon.contains(mouseGeoLocation)) {
+				mouseCountry = country.name;
+				return;
+			}
+		}
+	}
+	mouseCountry = "";
 }
