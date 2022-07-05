@@ -3,7 +3,7 @@
 #include "KrimzLib.h"
 
 
-namespace Input {
+namespace Postprocess {
 	void Initialize();
 	void Update();
 }

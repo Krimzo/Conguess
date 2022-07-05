@@ -180,6 +180,7 @@
     <ClCompile Include="KLibrary\window\window_private.cpp" />
     <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\Input.cpp" />
+    <ClCompile Include="source\Postprocess.cpp" />
     <ClCompile Include="source\Render.cpp" />
     <ClCompile Include="source\Skybox.cpp" />
   </ItemGroup>
@@ -220,6 +221,7 @@
     <ClInclude Include="KLibrary\window\window.h" />
     <ClInclude Include="source\Game.h" />
     <ClInclude Include="source\Input.h" />
+    <ClInclude Include="source\Postprocess.h" />
     <ClInclude Include="source\Render.h" />
     <ClInclude Include="source\Skybox.h" />
   </ItemGroup>
