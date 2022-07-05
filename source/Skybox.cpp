@@ -26,7 +26,7 @@ void Skybox::Initialize() {
 	depthState = Game::gpu->newDepthState(false, false, false);
 
 	Game::Log("Compiling skybox shaders");
-	shaders = Game::gpu->newShaders(kl::file::readString("source/Shaders/Skybox.hlsl"));
+	shaders = Game::gpu->newShaders(kl::file::readString("source/shaders/Skybox.hlsl"));
 
 	Game::Log("Loading box mesh");
 	mesh = Game::gpu->newVertexBuffer("resource/meshes/cube.obj");

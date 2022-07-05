@@ -17,7 +17,7 @@ void Render::Initialize() {
 	depthState = Game::gpu->newDepthState(true, false, false);
 
 	Game::Log("Compiling render shaders");
-	shaders = Game::gpu->newShaders(kl::file::readString("source/Shaders/Render.hlsl"));
+	shaders = Game::gpu->newShaders(kl::file::readString("source/shaders/Render.hlsl"));
 
 	Game::Log("Creating render targets");
 	Render::Resize(Game::window.size());
