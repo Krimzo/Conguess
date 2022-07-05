@@ -57,7 +57,13 @@ float GetFragRoughnes(float2 fragTexture)
     return earthRoughnessMap.Sample(defaultSampler, fragTexture).x;
 }
 
-float4 pShader(VS_OUT data) : SV_TARGET0
+struct PS_OUT
+{
+    float4 color : SV_TARGET0;
+    float4 index : SV_TARGET1;
+};
+
+PS_OUT pShader(VS_OUT data)
 {
     data.normal = GetFragNormal(data.world, normalize(data.normal), data.textur);
     
@@ -85,5 +91,8 @@ float4 pShader(VS_OUT data) : SV_TARGET0
     finalColor = lerp(nightColor, finalColor, diffuseFactor);
     finalColor = lerp(finalColor, cloudColor, cloudColor.r);
     
-    return finalColor;
+    PS_OUT outData;
+    outData.color = finalColor;
+    outData.index = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    return outData;
 }

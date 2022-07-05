@@ -19,6 +19,9 @@ void Render::Initialize() {
 	Game::Log("Compiling render shaders");
 	shaders = Game::gpu->newShaders(kl::file::readString("source/Shaders/Render.hlsl"));
 
+	Game::Log("Creating render targets");
+	Render::Resize(Game::window.size());
+
 	Game::Log("Loading box mesh");
 	mesh = Game::gpu->newVertexBuffer("resource/meshes/sphere.obj");
 
@@ -44,6 +47,9 @@ void Render::Initialize() {
 }
 
 void Render::Update() {
+	Game::gpu->clear(Render::indexTargetView, {});
+
+	Game::gpu->bindTargets({ Render::renderTargetView, Render::indexTargetView });
 	Game::gpu->bind(depthState);
 	Game::gpu->bind(shaders);
 
@@ -70,4 +76,34 @@ void Render::Update() {
 	Game::gpu->bindPixelShaderView(earthRoughnessMap, 4);
 
 	Game::gpu->draw(mesh);
+}
+
+void Render::Resize(const kl::uint2& newSize) {
+	Game::gpu->bindInternal({});
+	Game::gpu->bindPixelShaderView(nullptr, 0);
+	Game::gpu->bindPixelShaderView(nullptr, 1);
+
+	kl::dx::desc::texture renderTextureDesc = {};
+	renderTextureDesc.Width = newSize.x;
+	renderTextureDesc.Height = newSize.y;
+	renderTextureDesc.MipLevels = 1;
+	renderTextureDesc.ArraySize = 1;
+	renderTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	renderTextureDesc.SampleDesc.Count = 1;
+	renderTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	renderTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+	Game::gpu->destroy(renderTargetView);
+	Game::gpu->destroy(renderShaderView);
+	kl::dx::texture renderTexture = Game::gpu->newTexture(&renderTextureDesc);
+	renderTargetView = Game::gpu->newTargetView(renderTexture);
+	renderShaderView = Game::gpu->newShaderView(renderTexture);
+	Game::gpu->destroy(renderTexture);
+
+	Game::gpu->destroy(indexTargetView);
+	Game::gpu->destroy(indexShaderView);
+	kl::dx::texture indexTexture = Game::gpu->newTexture(&renderTextureDesc);
+	indexTargetView = Game::gpu->newTargetView(indexTexture);
+	indexShaderView = Game::gpu->newShaderView(indexTexture);
+	Game::gpu->destroy(indexTexture);
 }

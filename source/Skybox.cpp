@@ -1,4 +1,5 @@
 #include "Skybox.h"
+#include "Render.h"
 #include "Game.h"
 
 
@@ -35,6 +36,9 @@ void Skybox::Initialize() {
 }
 
 void Skybox::Update() {
+	Game::gpu->clear(Render::renderTargetView, kl::colors::gray);
+
+	Game::gpu->bindTargets({ Render::renderTargetView });
 	Game::gpu->bind(depthState);
 	Game::gpu->bind(shaders);
 

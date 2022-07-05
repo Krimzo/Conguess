@@ -11,27 +11,28 @@ void Game::Log(const std::string& message) {
 	window.title(message);
 }
 
+void Resize(const kl::uint2& newSize) {
+	if (newSize.x > 0 && newSize.y > 0) {
+		Render::Resize(newSize);
+		Game::gpu->regenInternal(newSize);
+		Game::gpu->viewport(newSize);
+		Game::camera.aspect = float(newSize.x) / newSize.y;
+	}
+}
+
 void Start() {
 	Game::window.draw(kl::image(Game::window.size(), kl::colors::gray));
-
 	Game::window.icon("resource/textures/icon.ico");
 
 	Game::gpu = kl::make<kl::gpu>(Game::window);
 	Game::gpu->bind(Game::gpu->newSamplerState(true, false), 0);
 
-	Game::window.resize = [&](const kl::uint2& newSize) {
-		if (newSize.x > 0 && newSize.y > 0) {
-			Game::gpu->regenInternal(newSize);
-			Game::gpu->viewport({}, newSize);
-			Game::camera.aspect = float(newSize.x) / newSize.y;
-		}
-	};
-
+	Game::window.resize = Resize;
 	Game::camera.position = Game::camera.forward() * -2.0f;
 
 	Input::Initialize();
-	Render::Initialize();
 	Skybox::Initialize();
+	Render::Initialize();
 	Postprocess::Initialize();
 
 	timer.reset();
