@@ -15,16 +15,30 @@ struct PS_CB {
 
 void Render::Initialize() {
 	depthState = Game::gpu->newDepthState(true, false, false);
+
+	Game::Log("Compiling render shaders");
 	shaders = Game::gpu->newShaders(kl::file::readString("source/Shaders/Render.hlsl"));
+
+	Game::Log("Loading box mesh");
 	mesh = Game::gpu->newVertexBuffer("resource/meshes/sphere.obj");
+
+	Game::Log("Loading earth day texture");
 	earthDayTexture = Game::gpu->newShaderView(Game::gpu->newTexture(
 		kl::image(std::string("resource/textures/earth_day.png"))));
+
+	Game::Log("Loading earth night texture");
 	earthNightTexture = Game::gpu->newShaderView(Game::gpu->newTexture(
 		kl::image(std::string("resource/textures/earth_night.png"))));
+
+	Game::Log("Loading earth clouds texture");
 	earthCloudsTexture = Game::gpu->newShaderView(Game::gpu->newTexture(
 		kl::image(std::string("resource/textures/earth_clouds.png"))));
+
+	Game::Log("Loading earth normal map");
 	earthNormalMap = Game::gpu->newShaderView(Game::gpu->newTexture(
 		kl::image(std::string("resource/textures/earth_normal.png"))));
+
+	Game::Log("Loading earth roughness map");
 	earthRoughnessMap = Game::gpu->newShaderView(Game::gpu->newTexture(
 		kl::image(std::string("resource/textures/earth_roughness.png"))));
 }

@@ -23,8 +23,14 @@ kl::dx::view::shader ProcessBoxImage(const kl::image& image) {
 
 void Skybox::Initialize() {
 	depthState = Game::gpu->newDepthState(false, false, false);
+
+	Game::Log("Compiling skybox shaders");
 	shaders = Game::gpu->newShaders(kl::file::readString("source/Shaders/Skybox.hlsl"));
+
+	Game::Log("Loading box mesh");
 	mesh = Game::gpu->newVertexBuffer("resource/meshes/cube.obj");
+
+	Game::Log("Loading skybox texture");
 	texture = ProcessBoxImage(kl::image(std::string("resource/textures/stars_milky.png")));
 }
 

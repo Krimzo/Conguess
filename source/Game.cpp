@@ -7,7 +7,15 @@
 
 static kl::timer timer = {};
 
+void Game::Log(const std::string& message) {
+	window.title(message);
+}
+
 void Start() {
+	Game::window.draw(kl::image(Game::window.size(), kl::colors::gray));
+
+	Game::window.icon("resource/textures/icon.ico");
+
 	Game::gpu = kl::make<kl::gpu>(Game::window);
 	Game::gpu->bind(Game::gpu->newSamplerState(true, false), 0);
 
@@ -37,13 +45,26 @@ void Update() {
 
 	Game::gpu->clear(kl::colors::gray);
 
+	kl::time::interval();
 	Skybox::Update();
+	const double skyboxTime = kl::time::interval();
+
+	kl::time::interval();
 	Render::Update();
+	const double renderTime = kl::time::interval();
+
+	kl::time::interval();
 	Postprocess::Update();
+	const double postprocessTime = kl::time::interval();
 
 	Game::gpu->swap(true);
 
-	Game::window.title(kl::format(int(1.0f / Game::deltaT)));
+	Game::Log(kl::format(std::fixed, std::setprecision(2),
+		"Skybox[", skyboxTime * 1e3, "] ",
+		"Render[", renderTime * 1e3, "] ",
+		"Postprocess[", postprocessTime * 1e3, "] ",
+		"Frame(", Game::deltaT * 1e3, ")"
+	));
 }
 
 void End() {
