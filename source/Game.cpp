@@ -9,6 +9,7 @@ static kl::timer timer = {};
 
 void Start() {
 	Game::gpu = kl::make<kl::gpu>(Game::window);
+	Game::gpu->bind(Game::gpu->newSamplerState(true, false), 0);
 
 	Game::window.resize = [&](const kl::uint2& newSize) {
 		if (newSize.x > 0 && newSize.y > 0) {
