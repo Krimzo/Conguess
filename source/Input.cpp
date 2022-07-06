@@ -72,12 +72,12 @@ void Input::Update() {
 	mouseGeoLocation.y = kl::float2(greenwich.x, greenwich.z).angle(kl::float2(mouseSphereIntersectNoY.x, mouseSphereIntersectNoY.z), true);
 
 	for (auto& country : Data::countries) {
-		for (auto& polygon : country.polygons) {
+		for (auto& polygon : country.second) {
 			if (polygon.contains(mouseGeoLocation)) {
-				mouseCountry = country.name;
+				mouseCountryName = country.first;
 				return;
 			}
 		}
 	}
-	mouseCountry = "";
+	mouseCountryName = "";
 }

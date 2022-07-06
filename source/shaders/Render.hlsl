@@ -95,7 +95,7 @@ PS_OUT pShader(VS_OUT data)
     finalColor = lerp(finalColor, cloudColor, cloudColor.r);
     finalColor = lerp(finalColor, boundsColor, boundsColor.r);
     
-    const float4 index = { 1.0f, boundsColor.r, 1.0f, 1.0f };
+    const float4 index = { 1.0f, boundsColor.r, 0.0f, 0.0f };
     
     PS_OUT outData;
     outData.color = finalColor;

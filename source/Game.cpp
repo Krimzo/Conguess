@@ -6,7 +6,7 @@
 #include "Data.h"
 
 
-static constexpr bool DEBUG_TIMES = false;
+static constexpr bool DEBUG_TIMES = true;
 static kl::timer timer = {};
 
 void Game::Log(const std::string& message) {
