@@ -21,5 +21,13 @@ void Postprocess::Update() {
 	Game::gpu->bindPixelShaderView(Render::renderShaderView, 0);
 	Game::gpu->bindPixelShaderView(Render::indexShaderView, 1);
 
+	kl::float4 miscData = {
+		float(renderBounds),
+		float(Game::window.mouse.lmb),
+		0.0f,
+		0.0f
+	};
+	Game::gpu->autoPixelCBuffer(miscData);
+
 	Game::gpu->draw(mesh);
 }

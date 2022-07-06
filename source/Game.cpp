@@ -6,11 +6,24 @@
 #include "Data.h"
 
 
-static constexpr bool DEBUG_TIMES = true;
+static constexpr bool DEBUG_TIMES = false;
 static kl::timer timer = {};
 
 void Game::Log(const std::string& message) {
 	window.title(message);
+}
+void Game::LogPlayStats() {
+	Game::Log(kl::format(
+		"[", Game::playerScore, "] ",
+		"(", Data::countries[Game::lastRandomCountry].name, ")"
+	));
+}
+void Game::NewRandomCountry() {
+	int newRandomCountry = lastRandomCountry;
+	while (newRandomCountry == lastRandomCountry) {
+		newRandomCountry = kl::random::INT(int(Data::countries.size()));
+	}
+	lastRandomCountry = newRandomCountry;
 }
 
 void Resize(const kl::uint2& newSize) {
@@ -39,13 +52,15 @@ void Start() {
 	Render::Initialize();
 	Postprocess::Initialize();
 
-	Game::window.title("World Guesser");
+	Game::window.keys.r.press();
 
 	timer.reset();
 }
 
 void Update() {
+	kl::time::interval();
 	Input::Update();
+	const double inputTime = kl::time::interval();
 
 	Game::deltaT = (float)timer.interval();
 	Game::elapsedT = (float)timer.elapsed();
@@ -68,10 +83,11 @@ void Update() {
 
 	if constexpr (DEBUG_TIMES) {
 		Game::Log(kl::format(std::fixed, std::setprecision(2),
-			"Skybox[", skyboxTime * 1e3, "] ",
-			"Render[", renderTime * 1e3, "] ",
-			"Postprocess[", postprocessTime * 1e3, "] ",
-			"Frame(", Game::deltaT * 1e3, ")"
+			"Input[", inputTime * 1000.0, "] ",
+			"Skybox[", skyboxTime * 1000.0, "] ",
+			"Render[", renderTime * 1000.0, "] ",
+			"Postprocess[", postprocessTime * 1000.0, "] ",
+			"FPS(", int(1.0 / Game::deltaT), ")"
 		));
 	}
 }

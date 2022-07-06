@@ -17,8 +17,11 @@ namespace Data {
 			return in;
 		}
 	};
-
-	inline std::unordered_map<std::string, std::vector<Polygon>> countries;
+	struct Country {
+		std::string name;
+		std::vector<Polygon> polygons;
+	};
+	inline std::vector<Country> countries;
 
 	void Initialize();
 }

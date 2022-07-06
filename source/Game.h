@@ -15,5 +15,10 @@ namespace Game {
 	inline kl::float3 sphereRotation = {};
 	inline kl::float3 sunDirection = { 1.0f, -1.0f, 1.0f };
 
+	inline int lastRandomCountry = -1;
+	inline int playerScore = 0;
+
 	void Log(const std::string& message);
+	void LogPlayStats();
+	void NewRandomCountry();
 }

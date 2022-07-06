@@ -40,6 +40,7 @@ Texture2D earthCloudsMap : register(t2);
 Texture2D earthNormalMap : register(t3);
 Texture2D earthRoughnessMap : register(t4);
 Texture2D earthBoundariesMap : register(t5);
+Texture2D earthIndiciesMap : register(t6);
 
 float3 GetFragNormal(float3 fragPosition, float3 fragNormal, float2 fragTexture)
 {
@@ -63,6 +64,33 @@ struct PS_OUT
     float4 color : SV_TARGET0;
     float4 index : SV_TARGET1;
 };
+
+int From4Values(float val)
+{
+    if (val < 0.2f)
+    {
+        return 0;
+    }
+    if (val < 0.5f)
+    {
+        return 1;
+    }
+    if (val < 0.8f)
+    {
+        return 2;
+    }
+    return 3;
+}
+int From4Values(float4 data)
+{
+    int value = 0;
+    int powers[4] = { 64, 16, 4, 1 };
+    for (int i = 0; i < 4; i++)
+    {
+        value += From4Values(data[i]) * powers[i];
+    }
+    return value;
+}
 
 PS_OUT pShader(VS_OUT data)
 {
@@ -90,15 +118,17 @@ PS_OUT pShader(VS_OUT data)
     
     const float4 boundsColor = earthBoundariesMap.Sample(defaultSampler, data.textur);
     
+    const float4 indexColor = earthIndiciesMap.Sample(defaultSampler, data.textur);
+    const float inMouseCountry = (From4Values(indexColor) == int(miscData.y)) ? 1.0f : 0.0f;
+    
     float4 finalColor = dayColor * fullLight;
     finalColor = lerp(nightColor, finalColor, diffuseFactor);
-    finalColor = lerp(finalColor, cloudColor, cloudColor.r);
-    finalColor = lerp(finalColor, boundsColor, boundsColor.r);
+    finalColor = lerp(finalColor, cloudColor, miscData.z ? cloudColor.r : 0.0f);
     
-    const float4 index = { 1.0f, boundsColor.r, 0.0f, 0.0f };
+    const float4 finalIndex = { 1.0f, boundsColor.r, inMouseCountry, 0.0f };
     
     PS_OUT outData;
     outData.color = finalColor;
-    outData.index = index;
+    outData.index = finalIndex;
     return outData;
 }

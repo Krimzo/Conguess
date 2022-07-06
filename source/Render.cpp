@@ -1,5 +1,6 @@
 #include "Render.h"
 #include "Game.h"
+#include "Input.h"
 
 
 struct VS_CB {
@@ -48,10 +49,14 @@ void Render::Initialize() {
 	Game::Log("Loading earth boundaries map");
 	earthBoundariesMap = Game::gpu->newShaderView(Game::gpu->newTexture(
 		kl::image(std::string("resource/textures/earth_boundaries.png"))));
+
+	Game::Log("Loading earth indicies map");
+	earthIndiciesMap = Game::gpu->newShaderView(Game::gpu->newTexture(
+		kl::image(std::string("resource/textures/earth_indicies.png"))));
 }
 
 void Render::Update() {
-	Game::gpu->clear(Render::indexTargetView, {});
+	Game::gpu->clear(Render::indexTargetView, { 0.0f, 0.0f, 0.0f, 0.0f });
 
 	Game::gpu->bindTargets({ Render::renderTargetView, Render::indexTargetView });
 	Game::gpu->bind(depthState);
@@ -67,8 +72,8 @@ void Render::Update() {
 	psData.cameraPosition = { Game::camera.position, 1.0f };
 	psData.miscData = {
 		Game::elapsedT / 1800.0f,
-		0.0f,
-		0.0f,
+		float(Input::mouseCountryIndex + 1),
+		float(renderClouds),
 		0.0f
 	};
 	Game::gpu->autoPixelCBuffer(psData);
@@ -79,6 +84,7 @@ void Render::Update() {
 	Game::gpu->bindPixelShaderView(earthNormalMap, 3);
 	Game::gpu->bindPixelShaderView(earthRoughnessMap, 4);
 	Game::gpu->bindPixelShaderView(earthBoundariesMap, 5);
+	Game::gpu->bindPixelShaderView(earthIndiciesMap, 6);
 
 	Game::gpu->draw(mesh);
 }

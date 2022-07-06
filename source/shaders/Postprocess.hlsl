@@ -5,6 +5,11 @@ float4 vShader(float3 pos : POS_IN) : SV_POSITION
 }
 
 // Pixel shader
+cbuffer PS_CB
+{
+    float4 miscData;
+};
+
 Texture2D colorMap : register(t0);
 Texture2D indexMap : register(t1);
 
@@ -30,18 +35,17 @@ float4 pShader(float4 screen : SV_POSITION) : SV_TARGET
     }
     
     // Boundaries
-    int foundCount = 0;
-    const int searchRadius = 1;
-    for (int y = -searchRadius; y <= searchRadius; y++)
+    if (miscData.x && indexMap[screen.xy].g)
     {
-        for (int x = -searchRadius; x <= searchRadius; x++)
-        {
-            if (indexMap[screen.xy + float2(x, y)].g)
-            {
-                foundCount += 1;
-            }
-        }
+        return float4(1.0f, 0.55f, 0.0f, 1.0f);
     }
-    const int maxSearchCount = (searchRadius * 2 + 1) * (searchRadius * 2 + 1);
-    return lerp(colorMap[screen.xy], float4(1.0f, 1.0f, 1.0f, 1.0f), foundCount / (maxSearchCount * 2.5f));
+    
+    // Index
+    if (indexMap[screen.xy].b)
+    {
+        return colorMap[screen.xy] * (miscData.y ? 1.7f : 1.3f);
+    }
+    
+    // Default
+    return colorMap[screen.xy];
 }

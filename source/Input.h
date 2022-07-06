@@ -5,7 +5,7 @@
 
 namespace Input {
 	inline kl::float2 mouseGeoLocation;
-	inline std::string mouseCountryName;
+	inline int mouseCountryIndex = -1;
 
 	void Initialize();
 	void Update();

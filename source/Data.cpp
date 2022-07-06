@@ -2,16 +2,15 @@
 #include "Game.h"
 
 
-void ReadCountryData() {
-	static const std::string dataFilePath = "resource/data/countries.txt";
+// Parse
+void ReadCountryData(const std::string& filePath) {
 	Game::Log("Reading country data");
-	std::ifstream file(dataFilePath);
-	kl::console::error(!file.is_open(), "Failed to open file \"" + dataFilePath + "\"");
+	std::ifstream file(filePath);
+	kl::console::error(!file.is_open(), "Failed to open file \"" + filePath + "\"");
 
 	std::stringstream ss;
 	bool readingName = true;
-	std::string countryName;
-	std::vector<Data::Polygon> countryPolygons;
+	Data::Country country;
 	Data::Polygon countryPolygon;
 	kl::float2 polygonCoord;
 
@@ -20,13 +19,13 @@ void ReadCountryData() {
 			switch (c) {
 			case '{':
 				readingName = false;
-				countryName = ss.str();
+				country.name = ss.str();
 				ss = {};
 				break;
 			case '}':
 				readingName = true;
-				Data::countries[countryName] = countryPolygons;
-				countryPolygons = {};
+				Data::countries.push_back(country);
+				country = {};
 				ss = {};
 				break;
 
@@ -34,7 +33,7 @@ void ReadCountryData() {
 				countryPolygon = {};
 				break;
 			case ']':
-				countryPolygons.push_back(countryPolygon);
+				country.polygons.push_back(countryPolygon);
 				break;
 
 			case '(':
@@ -56,23 +55,28 @@ void ReadCountryData() {
 			}
 		}
 	}
-
 	file.close();
 }
 
-kl::int2 ConvertCoords(const kl::uint2& imageSize, const kl::float2& coords) {
+// Boundaries
+kl::int2 CoordsToPoint(const kl::uint2& imageSize, const kl::float2& coords) {
 	kl::int2 res;
 	res.x = int(((coords.y + 180.0f) / 360.0f) * imageSize.x);
 	res.y = imageSize.y - int(((coords.x + 90.0f) / 180.0f) * imageSize.y);
 	return res;
 }
-
+kl::float2 PointToCoords(const kl::uint2& imageSize, const kl::int2& point) {
+	kl::float2 res;
+	res.x = ((imageSize.y - point.y) / float(imageSize.y)) * 180.0f - 90.0f;
+	res.y = (point.x / float(imageSize.x)) * 360.0f - 180.0f;
+	return res;
+}
 void DrawCountryBoundaries(kl::image& image, const std::vector<Data::Polygon>& polygons) {
 	for (auto& polygon : polygons) {
 		kl::float2 lastCoord = polygon.coords.back();
 		for (auto& coord : polygon.coords) {
-			const kl::int2 startPos = ConvertCoords(image.size(), lastCoord);
-			const kl::int2 endPos = ConvertCoords(image.size(), coord);
+			const kl::int2 startPos = CoordsToPoint(image.size(), lastCoord);
+			const kl::int2 endPos = CoordsToPoint(image.size(), coord);
 			for (int i = 0; i < 2; i++) {
 				image.drawLine(startPos + i, endPos + i, kl::colors::white);
 			}
@@ -80,17 +84,69 @@ void DrawCountryBoundaries(kl::image& image, const std::vector<Data::Polygon>& p
 		}
 	}
 }
-
-void GenerateBoundaryMap() {
-	Game::Log("Generating boundary map");
+void GenerateBoundaryMap(const std::string& filePath) {
 	kl::image image(kl::uint2(8192, 4096));
-	for (auto& country : Data::countries) {
-		DrawCountryBoundaries(image, country.second);
+	for (int i = 0; i < Data::countries.size(); i++) {
+		kl::print("Generating boundary map ", i + 1, "/", Data::countries.size(), " (", Data::countries[i].name, ")");
+		DrawCountryBoundaries(image, Data::countries[i].polygons);
 	}
-	image.toFile("resource/textures/earth_boundaries.png");
+	image.toFile(filePath);
 }
 
+// Indicies
+kl::float4 MinMaxCoords(const Data::Polygon& polygon) {
+	kl::float4 res = { -1e3f, 1e3f, 1e3f, -1e3f };
+	for (auto& coord : polygon.coords) {
+		res.x = max(res.x, coord.x);
+		res.y = min(res.y, coord.y);
+		res.z = min(res.z, coord.x);
+		res.w = max(res.w, coord.y);
+	}
+	return res;
+}
+kl::color IntTo4ValueColor(int value) {
+	int res[4] = {};
+	for (int i = 0; i < 4; i++) {
+		res[3 - i] = value % 4;
+		value /= 4;
+	}
+	return kl::color(res[0] * 85, res[1] * 85, res[2] * 85, res[3] * 85);
+}
+void DrawCountryIndicies(kl::image& image, const std::vector<Data::Polygon>& polygons, int index) {
+	for (auto& polygon : polygons) {
+		const kl::float4 squareBounds = MinMaxCoords(polygon);
+		const kl::uint2 topLeft = CoordsToPoint(image.size(), kl::float2(squareBounds.x, squareBounds.y));
+		const kl::uint2 bottomRight = CoordsToPoint(image.size(), kl::float2(squareBounds.z, squareBounds.w));
+		for (kl::uint2 point = topLeft; point.y <= bottomRight.y; point.y++) {
+			for (point.x = topLeft.x; point.x <= bottomRight.x; point.x++) {
+				if (polygon.contains(PointToCoords(image.size(), point))) {
+					image.pixel(point, IntTo4ValueColor(index));
+				}
+			}
+		}
+	}
+}
+void GenerateIndiciesMap(const std::string& filePath) {
+	kl::image image(kl::uint2(8192, 4096), kl::color(0, 0, 0, 0));
+	std::atomic<int> mapCounter = 0;
+	kl::async::loop(0, Data::countries.size(), [&](uint t, int64 i) {
+		kl::print("Generating index map ", ++mapCounter, "/", Data::countries.size(), " (", Data::countries[i].name, ")");
+		DrawCountryIndicies(image, Data::countries[i].polygons, int(i + 1));
+	});
+	image.toFile(filePath);
+}
+
+// Init
 void Data::Initialize() {
-	ReadCountryData();
-	GenerateBoundaryMap();
+	ReadCountryData("resource/data/countries.txt");
+
+	const std::string boundariesFile = "resource/textures/earth_boundaries.png";
+	if (!std::filesystem::exists(boundariesFile)) {
+		GenerateBoundaryMap(boundariesFile);
+	}
+
+	const std::string indiciesFile = "resource/textures/earth_indicies.png";
+	if (!std::filesystem::exists(indiciesFile)) {
+		GenerateIndiciesMap(indiciesFile);
+	}
 }

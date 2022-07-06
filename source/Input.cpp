@@ -1,6 +1,8 @@
 #include "Input.h"
 #include "Game.h"
 #include "Data.h"
+#include "Render.h"
+#include "Postprocess.h"
 
 
 static float _ignore = 0;
@@ -23,6 +25,7 @@ void SaveLastValues() {
 }
 
 void Input::Initialize() {
+	// Mouse
 	Game::window.mouse.lmb.press = [&]() {
 		SaveLastValues();
 	};
@@ -47,7 +50,33 @@ void Input::Initialize() {
 			SaveLastValues();
 		}
 	};
+	Game::window.mouse.lmb.release = [&]() {
+		if (mouseCountryIndex == Game::lastRandomCountry) {
+			Game::NewRandomCountry();
+			Game::playerScore++;
+		}
+		else if (mouseCountryIndex >= 0) {
+			Game::playerScore--;
+		}
+		Game::LogPlayStats();
+	};
+	Game::window.mouse.mmb.press = Game::window.mouse.lmb.press;
+	Game::window.mouse.rmb.press = Game::window.mouse.lmb.press;
+	Game::window.mouse.mmb.down = Game::window.mouse.lmb.down;
+	Game::window.mouse.rmb.down = Game::window.mouse.lmb.down;
 
+	// Keyboard
+	Game::window.keys.r.press = [&]() {
+		Game::NewRandomCountry();
+		Game::playerScore = 0;
+		Game::LogPlayStats();
+	};
+	Game::window.keys.c.press = [&]() {
+		Render::renderClouds = !Render::renderClouds;
+	};
+	Game::window.keys.b.press = [&]() {
+		Postprocess::renderBounds = !Postprocess::renderBounds;
+	};
 	Game::window.keys.f11.press = [&]() {
 		static bool previousState = false;
 		previousState = !previousState;
@@ -71,13 +100,13 @@ void Input::Update() {
 	const kl::float3 greenwich = (kl::mat4::rotation(Game::sphereRotation) * kl::float4(1.0f, 0.0f, 0.0f, 1.0f)).xyz;
 	mouseGeoLocation.y = kl::float2(greenwich.x, greenwich.z).angle(kl::float2(mouseSphereIntersectNoY.x, mouseSphereIntersectNoY.z), true);
 
-	for (auto& country : Data::countries) {
-		for (auto& polygon : country.second) {
+	for (int i = 0; i < Data::countries.size(); i++) {
+		for (auto& polygon : Data::countries[i].polygons) {
 			if (polygon.contains(mouseGeoLocation)) {
-				mouseCountryName = country.first;
+				mouseCountryIndex = i;
 				return;
 			}
 		}
 	}
-	mouseCountryName = "";
+	mouseCountryIndex = -10;
 }

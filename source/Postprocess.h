@@ -9,6 +9,8 @@ namespace Postprocess {
 
 	inline kl::dx::mesh mesh = nullptr;
 
+	inline bool renderBounds = false;
+
 	void Initialize();
 	void Update();
 }
