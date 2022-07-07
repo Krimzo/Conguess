@@ -91,6 +91,7 @@ void GenerateBoundaryMap(const std::string& filePath) {
 		DrawCountryBoundaries(image, Data::countries[i].polygons);
 	}
 	image.toFile(filePath);
+	kl::print("Done generating boundaries map");
 }
 
 // Indicies
@@ -134,6 +135,7 @@ void GenerateIndiciesMap(const std::string& filePath) {
 		DrawCountryIndicies(image, Data::countries[i].polygons, int(i + 1));
 	});
 	image.toFile(filePath);
+	kl::print("Done generating indicies map");
 }
 
 // Init
