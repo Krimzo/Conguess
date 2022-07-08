@@ -19,43 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="KLibrary\source\gpu\buffer\constant_buffer.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\buffer\gpu_buffer.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\gpu.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\states\depth_state.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\states\raster_state.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\states\sampler_state.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\utility\shaders.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\utility\texture.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\utility\vbuffer.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\views\access_view.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\views\depth_view.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\views\shader_view.cpp" />
-    <ClCompile Include="KLibrary\source\gpu\views\target_view.cpp" />
-    <ClCompile Include="KLibrary\source\graphics\color.cpp" />
-    <ClCompile Include="KLibrary\source\graphics\image.cpp" />
-    <ClCompile Include="KLibrary\source\graphics\video.cpp" />
-    <ClCompile Include="KLibrary\source\render\camera.cpp" />
-    <ClCompile Include="KLibrary\source\render\plane.cpp" />
-    <ClCompile Include="KLibrary\source\render\ray.cpp" />
-    <ClCompile Include="KLibrary\source\render\sphere.cpp" />
-    <ClCompile Include="KLibrary\source\render\triangle.cpp" />
-    <ClCompile Include="KLibrary\source\render\vertex.cpp" />
-    <ClCompile Include="KLibrary\source\utility\async.cpp" />
-    <ClCompile Include="KLibrary\source\utility\console.cpp" />
-    <ClCompile Include="KLibrary\source\utility\encrypter.cpp" />
-    <ClCompile Include="KLibrary\source\utility\file.cpp" />
-    <ClCompile Include="KLibrary\source\utility\random.cpp" />
-    <ClCompile Include="KLibrary\source\utility\socket.cpp" />
-    <ClCompile Include="KLibrary\source\utility\strings.cpp" />
-    <ClCompile Include="KLibrary\source\utility\time.cpp" />
-    <ClCompile Include="KLibrary\source\utility\web.cpp" />
-    <ClCompile Include="KLibrary\source\window\double_buffer.cpp" />
-    <ClCompile Include="KLibrary\source\window\key.cpp" />
-    <ClCompile Include="KLibrary\source\window\keys.cpp" />
-    <ClCompile Include="KLibrary\source\window\mouse.cpp" />
-    <ClCompile Include="KLibrary\source\window\window.cpp" />
-    <ClCompile Include="KLibrary\source\window\window_private.cpp" />
     <ClCompile Include="source\Data.cpp" />
     <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\Input.cpp" />
@@ -64,40 +27,6 @@
     <ClCompile Include="source\Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="KLibrary\source\gpu\dx_types.h" />
-    <ClInclude Include="KLibrary\source\gpu\gpu.h" />
-    <ClInclude Include="KLibrary\source\graphics\color.h" />
-    <ClInclude Include="KLibrary\source\graphics\image.h" />
-    <ClInclude Include="KLibrary\source\graphics\video.h" />
-    <ClInclude Include="KLibrary\source\KrimzLib.h" />
-    <ClInclude Include="KLibrary\source\math\math.h" />
-    <ClInclude Include="KLibrary\source\math\matrix.h" />
-    <ClInclude Include="KLibrary\source\math\matrix2x2.h" />
-    <ClInclude Include="KLibrary\source\math\matrix3x3.h" />
-    <ClInclude Include="KLibrary\source\math\matrix4x4.h" />
-    <ClInclude Include="KLibrary\source\math\vector2.h" />
-    <ClInclude Include="KLibrary\source\math\vector3.h" />
-    <ClInclude Include="KLibrary\source\math\vector4.h" />
-    <ClInclude Include="KLibrary\source\render\camera.h" />
-    <ClInclude Include="KLibrary\source\render\plane.h" />
-    <ClInclude Include="KLibrary\source\render\ray.h" />
-    <ClInclude Include="KLibrary\source\render\sphere.h" />
-    <ClInclude Include="KLibrary\source\render\triangle.h" />
-    <ClInclude Include="KLibrary\source\render\vertex.h" />
-    <ClInclude Include="KLibrary\source\utility\async.h" />
-    <ClInclude Include="KLibrary\source\utility\console.h" />
-    <ClInclude Include="KLibrary\source\utility\encrypter.h" />
-    <ClInclude Include="KLibrary\source\utility\file.h" />
-    <ClInclude Include="KLibrary\source\utility\random.h" />
-    <ClInclude Include="KLibrary\source\utility\socket.h" />
-    <ClInclude Include="KLibrary\source\utility\strings.h" />
-    <ClInclude Include="KLibrary\source\utility\time.h" />
-    <ClInclude Include="KLibrary\source\utility\web.h" />
-    <ClInclude Include="KLibrary\source\window\double_buffer.h" />
-    <ClInclude Include="KLibrary\source\window\key.h" />
-    <ClInclude Include="KLibrary\source\window\keys.h" />
-    <ClInclude Include="KLibrary\source\window\mouse.h" />
-    <ClInclude Include="KLibrary\source\window\window.h" />
     <ClInclude Include="source\Data.h" />
     <ClInclude Include="source\Game.h" />
     <ClInclude Include="source\Input.h" />
@@ -200,7 +129,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\;$(SolutionDir)KLibrary\source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\;$(SolutionDir)KLibrary\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -217,7 +146,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\;$(SolutionDir)KLibrary\source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\;$(SolutionDir)KLibrary\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
