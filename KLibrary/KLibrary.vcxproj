@@ -18,11 +18,87 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="examples\Raytracing.cpp" />
+    <ClCompile Include="source\render\plane.cpp" />
+    <ClCompile Include="source\render\ray.cpp" />
+    <ClCompile Include="source\render\triangle.cpp" />
+    <ClCompile Include="source\render\vertex.cpp" />
+    <ClCompile Include="source\gpu\buffer\constant_buffer.cpp" />
+    <ClCompile Include="source\gpu\buffer\gpu_buffer.cpp" />
+    <ClCompile Include="source\gpu\gpu.cpp" />
+    <ClCompile Include="source\gpu\states\depth_state.cpp" />
+    <ClCompile Include="source\gpu\states\raster_state.cpp" />
+    <ClCompile Include="source\gpu\states\sampler_state.cpp" />
+    <ClCompile Include="source\gpu\utility\shaders.cpp" />
+    <ClCompile Include="source\gpu\utility\texture.cpp" />
+    <ClCompile Include="source\gpu\utility\vbuffer.cpp" />
+    <ClCompile Include="source\gpu\views\access_view.cpp" />
+    <ClCompile Include="source\gpu\views\depth_view.cpp" />
+    <ClCompile Include="source\gpu\views\shader_view.cpp" />
+    <ClCompile Include="source\gpu\views\target_view.cpp" />
+    <ClCompile Include="source\graphics\color.cpp" />
+    <ClCompile Include="source\graphics\image.cpp" />
+    <ClCompile Include="source\graphics\video.cpp" />
+    <ClCompile Include="source\render\sphere.cpp" />
+    <ClCompile Include="source\utility\console.cpp" />
+    <ClCompile Include="source\utility\encrypter.cpp" />
+    <ClCompile Include="source\utility\file.cpp" />
+    <ClCompile Include="source\utility\random.cpp" />
+    <ClCompile Include="source\utility\socket.cpp" />
+    <ClCompile Include="source\utility\async.cpp" />
+    <ClCompile Include="source\utility\strings.cpp" />
+    <ClCompile Include="source\utility\time.cpp" />
+    <ClCompile Include="source\utility\web.cpp" />
+    <ClCompile Include="source\render\camera.cpp" />
+    <ClCompile Include="source\window\double_buffer.cpp" />
+    <ClCompile Include="source\window\key.cpp" />
+    <ClCompile Include="source\window\keys.cpp" />
+    <ClCompile Include="source\window\mouse.cpp" />
+    <ClCompile Include="source\window\window.cpp" />
+    <ClCompile Include="source\window\window_private.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\gpu\dx_types.h" />
+    <ClInclude Include="source\render\plane.h" />
+    <ClInclude Include="source\render\ray.h" />
+    <ClInclude Include="source\render\sphere.h" />
+    <ClInclude Include="source\render\triangle.h" />
+    <ClInclude Include="source\render\vertex.h" />
+    <ClInclude Include="source\gpu\gpu.h" />
+    <ClInclude Include="source\graphics\color.h" />
+    <ClInclude Include="source\graphics\image.h" />
+    <ClInclude Include="source\graphics\video.h" />
+    <ClInclude Include="source\KrimzLib.h" />
+    <ClInclude Include="source\math\math.h" />
+    <ClInclude Include="source\math\matrix.h" />
+    <ClInclude Include="source\math\matrix2x2.h" />
+    <ClInclude Include="source\math\matrix3x3.h" />
+    <ClInclude Include="source\math\matrix4x4.h" />
+    <ClInclude Include="source\math\vector2.h" />
+    <ClInclude Include="source\math\vector3.h" />
+    <ClInclude Include="source\math\vector4.h" />
+    <ClInclude Include="source\utility\console.h" />
+    <ClInclude Include="source\utility\encrypter.h" />
+    <ClInclude Include="source\utility\file.h" />
+    <ClInclude Include="source\utility\random.h" />
+    <ClInclude Include="source\utility\socket.h" />
+    <ClInclude Include="source\utility\async.h" />
+    <ClInclude Include="source\utility\strings.h" />
+    <ClInclude Include="source\utility\time.h" />
+    <ClInclude Include="source\utility\web.h" />
+    <ClInclude Include="source\render\camera.h" />
+    <ClInclude Include="source\window\double_buffer.h" />
+    <ClInclude Include="source\window\key.h" />
+    <ClInclude Include="source\window\keys.h" />
+    <ClInclude Include="source\window\mouse.h" />
+    <ClInclude Include="source\window\window.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{78df2969-96a5-45c9-aa27-d698bcfbd9f8}</ProjectGuid>
-    <RootNamespace>WorldGuesser</RootNamespace>
+    <ProjectGuid>{50bbfb74-f60c-4e84-9a43-5b07bdcbc296}</ProjectGuid>
+    <RootNamespace>KLibrary</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,11 +146,23 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <IntDir>grbg\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <IntDir>grbg\</IntDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)inter\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)inter\</IntDir>
   </PropertyGroup>
@@ -84,6 +172,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -98,6 +192,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -113,8 +212,11 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\;$(SolutionDir)KLibrary\source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,8 +232,11 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\;$(SolutionDir)KLibrary\source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,93 +245,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="KLibrary\gpu\buffer\constant_buffer.cpp" />
-    <ClCompile Include="KLibrary\gpu\buffer\gpu_buffer.cpp" />
-    <ClCompile Include="KLibrary\gpu\gpu.cpp" />
-    <ClCompile Include="KLibrary\gpu\states\depth_state.cpp" />
-    <ClCompile Include="KLibrary\gpu\states\raster_state.cpp" />
-    <ClCompile Include="KLibrary\gpu\states\sampler_state.cpp" />
-    <ClCompile Include="KLibrary\gpu\utility\shaders.cpp" />
-    <ClCompile Include="KLibrary\gpu\utility\texture.cpp" />
-    <ClCompile Include="KLibrary\gpu\utility\vbuffer.cpp" />
-    <ClCompile Include="KLibrary\gpu\views\access_view.cpp" />
-    <ClCompile Include="KLibrary\gpu\views\depth_view.cpp" />
-    <ClCompile Include="KLibrary\gpu\views\shader_view.cpp" />
-    <ClCompile Include="KLibrary\gpu\views\target_view.cpp" />
-    <ClCompile Include="KLibrary\graphics\color.cpp" />
-    <ClCompile Include="KLibrary\graphics\image.cpp" />
-    <ClCompile Include="KLibrary\graphics\video.cpp" />
-    <ClCompile Include="KLibrary\render\camera.cpp" />
-    <ClCompile Include="KLibrary\render\plane.cpp" />
-    <ClCompile Include="KLibrary\render\ray.cpp" />
-    <ClCompile Include="KLibrary\render\sphere.cpp" />
-    <ClCompile Include="KLibrary\render\triangle.cpp" />
-    <ClCompile Include="KLibrary\render\vertex.cpp" />
-    <ClCompile Include="KLibrary\utility\async.cpp" />
-    <ClCompile Include="KLibrary\utility\console.cpp" />
-    <ClCompile Include="KLibrary\utility\encrypter.cpp" />
-    <ClCompile Include="KLibrary\utility\file.cpp" />
-    <ClCompile Include="KLibrary\utility\random.cpp" />
-    <ClCompile Include="KLibrary\utility\socket.cpp" />
-    <ClCompile Include="KLibrary\utility\strings.cpp" />
-    <ClCompile Include="KLibrary\utility\time.cpp" />
-    <ClCompile Include="KLibrary\utility\web.cpp" />
-    <ClCompile Include="KLibrary\window\double_buffer.cpp" />
-    <ClCompile Include="KLibrary\window\key.cpp" />
-    <ClCompile Include="KLibrary\window\keys.cpp" />
-    <ClCompile Include="KLibrary\window\mouse.cpp" />
-    <ClCompile Include="KLibrary\window\window.cpp" />
-    <ClCompile Include="KLibrary\window\window_private.cpp" />
-    <ClCompile Include="source\Data.cpp" />
-    <ClCompile Include="source\Game.cpp" />
-    <ClCompile Include="source\Input.cpp" />
-    <ClCompile Include="source\Postprocess.cpp" />
-    <ClCompile Include="source\Render.cpp" />
-    <ClCompile Include="source\Skybox.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="KLibrary\gpu\dx_types.h" />
-    <ClInclude Include="KLibrary\gpu\gpu.h" />
-    <ClInclude Include="KLibrary\graphics\color.h" />
-    <ClInclude Include="KLibrary\graphics\image.h" />
-    <ClInclude Include="KLibrary\graphics\video.h" />
-    <ClInclude Include="KLibrary\KrimzLib.h" />
-    <ClInclude Include="KLibrary\math\math.h" />
-    <ClInclude Include="KLibrary\math\matrix.h" />
-    <ClInclude Include="KLibrary\math\matrix2x2.h" />
-    <ClInclude Include="KLibrary\math\matrix3x3.h" />
-    <ClInclude Include="KLibrary\math\matrix4x4.h" />
-    <ClInclude Include="KLibrary\math\vector2.h" />
-    <ClInclude Include="KLibrary\math\vector3.h" />
-    <ClInclude Include="KLibrary\math\vector4.h" />
-    <ClInclude Include="KLibrary\render\camera.h" />
-    <ClInclude Include="KLibrary\render\plane.h" />
-    <ClInclude Include="KLibrary\render\ray.h" />
-    <ClInclude Include="KLibrary\render\sphere.h" />
-    <ClInclude Include="KLibrary\render\triangle.h" />
-    <ClInclude Include="KLibrary\render\vertex.h" />
-    <ClInclude Include="KLibrary\utility\async.h" />
-    <ClInclude Include="KLibrary\utility\console.h" />
-    <ClInclude Include="KLibrary\utility\encrypter.h" />
-    <ClInclude Include="KLibrary\utility\file.h" />
-    <ClInclude Include="KLibrary\utility\random.h" />
-    <ClInclude Include="KLibrary\utility\socket.h" />
-    <ClInclude Include="KLibrary\utility\strings.h" />
-    <ClInclude Include="KLibrary\utility\time.h" />
-    <ClInclude Include="KLibrary\utility\web.h" />
-    <ClInclude Include="KLibrary\window\double_buffer.h" />
-    <ClInclude Include="KLibrary\window\key.h" />
-    <ClInclude Include="KLibrary\window\keys.h" />
-    <ClInclude Include="KLibrary\window\mouse.h" />
-    <ClInclude Include="KLibrary\window\window.h" />
-    <ClInclude Include="source\Data.h" />
-    <ClInclude Include="source\Game.h" />
-    <ClInclude Include="source\Input.h" />
-    <ClInclude Include="source\Postprocess.h" />
-    <ClInclude Include="source\Render.h" />
-    <ClInclude Include="source\Skybox.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
