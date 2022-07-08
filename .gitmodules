@@ -1,0 +1,3 @@
+[submodule "KLibrary"]
+	path = KLibrary
+	url = https://github.com/Krimzo/KLibrary
