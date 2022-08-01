@@ -9,16 +9,20 @@
 
 
 namespace kl {
-	template<typename T, uint64 W, uint64 H> struct matrix : public std::array<T, W* H> {
+	template<typename T, uint64 W, uint64 H>
+	struct matrix : public std::array<T, W* H> {
 
 		matrix() : std::array<T, W* H>() {
-			for (uint64 i = 0; i < (W * H); i += (W + 1)) {
-				(*this)[i] = 1;
+			if constexpr (W == H) {
+				for (uint64 i = 0; i < (W * H); i += (W + 1)) {
+					(*this)[i] = 1;
+				}
 			}
 		}
 
 		// Getter
-		template<typename T0> operator kl::matrix<T0, W, H>() const {
+		template<typename T0>
+		operator kl::matrix<T0, W, H>() const {
 			kl::matrix<T0, W, H> temp;
 			for (uint64 i = 0; i < (W * H); i++) {
 				temp[i] = T0((*this)[i]);
@@ -70,7 +74,8 @@ namespace kl {
 		void operator*=(const T& val) {
 			multiply(val, *this);
 		}
-		template<uint64 S> void multiply(const kl::matrix<T, S, W>& obj, kl::matrix<T, S, H>& out) const {
+		template<uint64 S>
+		void multiply(const kl::matrix<T, S, W>& obj, kl::matrix<T, S, H>& out) const {
 			for (uint64 y = 0; y < H; y++) {
 				for (uint64 x = 0; x < S; x++) {
 					out[y * S + x] = {};
@@ -80,12 +85,14 @@ namespace kl {
 				}
 			}
 		}
-		template<uint64 S> kl::matrix<T, S, H> operator*(const kl::matrix<T, S, W>& obj) const {
+		template<uint64 S>
+		kl::matrix<T, S, H> operator*(const kl::matrix<T, S, W>& obj) const {
 			kl::matrix<T, S, H> temp;
 			multiply(obj, temp);
 			return temp;
 		}
-		template<uint64 S> void operator*=(const kl::matrix<T, S, W>& obj) {
+		template<uint64 S>
+		void operator*=(const kl::matrix<T, S, W>& obj) {
 			*this = (*this) * obj;
 		}
 		bool multiply(const kl::vector2<T>& obj, kl::vector2<T>& out) const {
@@ -271,7 +278,7 @@ namespace kl {
 			if constexpr (W == H) {
 				const T det = determinant();
 				if (det) {
-					out = adjoint() * T(1.0 / det);
+					out = adjoint() * T(1.0f / det);
 					return true;
 				}
 			}
@@ -285,7 +292,8 @@ namespace kl {
 	};
 
 	// std::cout
-	template<typename T, uint64 W, uint64 H> inline std::ostream& operator<<(std::ostream& stream, const kl::matrix<T, W, H>& mat) {
+	template<typename T, uint64 W, uint64 H>
+	inline std::ostream& operator<<(std::ostream& stream, const kl::matrix<T, W, H>& mat) {
 		uint64 maxLenghts[W] = {};
 		std::string outputData[W * H] = {};
 

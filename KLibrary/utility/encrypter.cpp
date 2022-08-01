@@ -29,7 +29,7 @@ void kl::encrypter::genKeys() {
 void kl::encrypter::encrypt(void* data, uint64 dataSize) const {
 	for (auto& key : keys) {
 		for (uint64 i = 0; i < dataSize; i++) {
-			((byte*)data)[i] ^= key[i % key.size()];
+			((byte*) data)[i] ^= key[i % key.size()];
 		}
 	}
 }

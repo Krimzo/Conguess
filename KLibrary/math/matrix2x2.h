@@ -5,7 +5,8 @@
 
 
 namespace kl {
-	template<typename T> struct matrix2x2 : public kl::matrix<T, 2, 2> {
+	template<typename T>
+	struct matrix2x2 : public kl::matrix<T, 2, 2> {
 		matrix2x2() {}
 		matrix2x2(const kl::vector2<T>& r0, const kl::vector2<T>& r1) {
 			(*this)[0] = r0.x; (*this)[1] = r0.y;

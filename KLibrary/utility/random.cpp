@@ -3,7 +3,7 @@
 
 namespace _ignore {
 	static const int _dontcare = [] {
-		srand((unsigned int)std::time(nullptr));
+		srand((unsigned int) std::time(nullptr));
 		return 0;
 	}();
 }

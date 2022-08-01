@@ -8,15 +8,15 @@
 static float _ignore = 0;
 static bool lastIntersect = false;
 static kl::float3 lastDirection = {};
-static const kl::sphere sphere = { { 0.0f }, 1.0f };
+static const kl::sphere sphere = { {}, 1.0f };
 
 kl::ray GetMouseRay() {
-	const kl::float2 frameSize = Game::window.size();
+	const kl::float2 frameSize = Game::window->size();
 	const kl::float2 ndc = {
-		float(Game::window.mouse.position.x),
-		float(frameSize.y - Game::window.mouse.position.y)
+		float(Game::window->mouse.position().x),
+		float(frameSize.y - Game::window->mouse.position().y)
 	};
-	return { Game::camera, ndc / frameSize * 2.0f - 1.0f };
+	return { Game::camera, ndc / frameSize * 2.0f - kl::float2(1.0f, 1.0f) };
 }
 
 void SaveLastValues() {
@@ -26,10 +26,10 @@ void SaveLastValues() {
 
 void Input::Initialize() {
 	// Mouse
-	Game::window.mouse.lmb.press = [&]() {
+	Game::window->mouse.lmb.press = [&]() {
 		SaveLastValues();
 	};
-	Game::window.mouse.lmb.down = [&]() {
+	Game::window->mouse.lmb.down = [&]() {
 		kl::float3 currentDirection;
 		if (lastIntersect && GetMouseRay().intersect(sphere, currentDirection, _ignore)) {
 			currentDirection = currentDirection.normalize();
@@ -50,7 +50,7 @@ void Input::Initialize() {
 			SaveLastValues();
 		}
 	};
-	Game::window.mouse.lmb.release = [&]() {
+	Game::window->mouse.lmb.release = [&]() {
 		if (mouseCountryIndex == Game::lastRandomCountry) {
 			Game::NewRandomCountry();
 			Game::playerScore++;
@@ -60,35 +60,35 @@ void Input::Initialize() {
 		}
 		Game::LogPlayStats();
 	};
-	Game::window.mouse.mmb.press = Game::window.mouse.lmb.press;
-	Game::window.mouse.rmb.press = Game::window.mouse.lmb.press;
-	Game::window.mouse.mmb.down = Game::window.mouse.lmb.down;
-	Game::window.mouse.rmb.down = Game::window.mouse.lmb.down;
+	Game::window->mouse.mmb.press = Game::window->mouse.lmb.press;
+	Game::window->mouse.rmb.press = Game::window->mouse.lmb.press;
+	Game::window->mouse.mmb.down = Game::window->mouse.lmb.down;
+	Game::window->mouse.rmb.down = Game::window->mouse.lmb.down;
 
 	// Keyboard
-	Game::window.keys.r.press = [&]() {
+	Game::window->keys.r.press = [&]() {
 		Game::NewRandomCountry();
 		Game::playerScore = 0;
 		Game::LogPlayStats();
 	};
-	Game::window.keys.c.press = [&]() {
+	Game::window->keys.c.press = [&]() {
 		Render::renderClouds = !Render::renderClouds;
 	};
-	Game::window.keys.b.press = [&]() {
+	Game::window->keys.b.press = [&]() {
 		Postprocess::renderBounds = !Postprocess::renderBounds;
 	};
-	Game::window.keys.f11.press = [&]() {
+	Game::window->keys.f11.press = [&]() {
 		static bool previousState = false;
 		previousState = !previousState;
-		Game::window.fullscreen(previousState);
+		Game::window->fullscreen(previousState);
 	};
 }
 
 void Input::Update() {
 	static int lastScroll = 0;
-	const int scrollDelta = lastScroll - Game::window.mouse.scroll;
+	const int scrollDelta = lastScroll - Game::window->mouse.scroll();
 	Game::camera.fov = kl::math::minmax(Game::camera.fov + scrollDelta * 5.0f, 5.0f, 90.0f);
-	lastScroll = Game::window.mouse.scroll;
+	lastScroll = Game::window->mouse.scroll();
 
 	kl::float3 mouseSphereIntersect;
 	GetMouseRay().intersect(sphere, mouseSphereIntersect, _ignore);

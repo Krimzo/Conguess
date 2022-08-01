@@ -10,12 +10,15 @@ kl::ray::ray(const kl::float3& origin, const kl::mat4& invCamMat, const kl::floa
 kl::ray::ray(const kl::camera& cam, const kl::float2& ndc) : ray(cam.position, cam.matrix().inverse(), ndc) {}
 
 bool kl::ray::intersect(const kl::plane& plane, kl::float3* outInter) const {
-	const float dnDot = direction.dot(plane.normal);
-	if (dnDot != 0.0f) {
-		if (outInter) {
-			*outInter = origin - direction * ((origin - plane.point).dot(plane.normal) / dnDot);
+	const float denom = plane.normal.normalize().dot(direction.normalize());
+	if (std::abs(denom) > 0.0001f) {
+		const float t = (plane.point - origin).dot(plane.normal) / denom;
+		if (t >= 0.0f) {
+			if (outInter) {
+				*outInter = origin + direction * t;
+			}
+			return true;
 		}
-		return true;
 	}
 	return false;
 }
@@ -23,6 +26,7 @@ bool kl::ray::intersect(const kl::plane& plane, kl::float3* outInter) const {
 bool kl::ray::intersect(const kl::triangle& triangle, kl::float3* outInter) const {
 	const kl::float3 edge1 = triangle.b.world - triangle.a.world;
 	const kl::float3 edge2 = triangle.c.world - triangle.a.world;
+
 	const kl::float3 h = direction.cross(edge2);
 	const kl::float3 s = origin - triangle.a.world;
 	const float f = 1.0f / edge1.dot(h);

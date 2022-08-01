@@ -4,8 +4,8 @@
 
 
 namespace Game {
-	inline kl::window window;
-	inline kl::reference<kl::gpu> gpu;
+	inline kl::ref<kl::window> window;
+	inline kl::ref<kl::gpu> gpu;
 
 	inline kl::camera camera;
 

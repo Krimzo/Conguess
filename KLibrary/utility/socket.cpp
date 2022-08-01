@@ -64,25 +64,25 @@ void kl::socket::port(uint port) {
 }
 
 void kl::socket::listen(uint queueSize) {
-	kl::console::error(::bind(m_Socket, (sockaddr*)&m_Address, sizeof(m_Address)), "Could not bind socket");
+	kl::console::error(::bind(m_Socket, (sockaddr*) &m_Address, sizeof(m_Address)), "Could not bind socket");
 	kl::console::error(::listen(m_Socket, queueSize), "Could not listen on socket");
 }
 
 kl::socket kl::socket::accept() {
 	int addrLen = sizeof(m_Address);
-	uint64 accepted = ::accept(m_Socket, (sockaddr*)&m_Address, &addrLen);
+	uint64 accepted = ::accept(m_Socket, (sockaddr*) &m_Address, &addrLen);
 	kl::console::error(accepted == INVALID_SOCKET, "Could not accept socket");
 	return accepted;
 }
 
 void kl::socket::connect() {
-	kl::console::error(::connect(m_Socket, (sockaddr*)&m_Address, sizeof(m_Address)), "Could not connect to socket");
+	kl::console::error(::connect(m_Socket, (sockaddr*) &m_Address, sizeof(m_Address)), "Could not connect to socket");
 }
 
 int kl::socket::send(const void* data, uint byteSize) const {
-	return ::send(m_Socket, (const char*)data, byteSize, NULL);
+	return ::send(m_Socket, (const char*) data, byteSize, NULL);
 }
 
 int kl::socket::receive(void* buff, uint byteSize) const {
-	return recv(m_Socket, (char*)buff, byteSize, NULL);
+	return recv(m_Socket, (char*) buff, byteSize, NULL);
 }

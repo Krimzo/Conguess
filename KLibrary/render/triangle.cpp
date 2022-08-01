@@ -44,20 +44,20 @@ float kl::triangle::interpolate(const kl::float3& weights, const kl::float3& val
 }
 kl::vertex kl::triangle::interpolate(const kl::float3& weights) const {
 	return {
-		kl::float3 {
+		kl::float3{
 			interpolate(weights, { a.world.x, b.world.x, c.world.x }),
 			interpolate(weights, { a.world.y, b.world.y, c.world.y }),
 			interpolate(weights, { a.world.z, b.world.z, c.world.z })
-		},
-		kl::float2 {
+	},
+		kl::float2{
 			interpolate(weights, { a.texture.x, b.texture.x, c.texture.x }),
 			interpolate(weights, { a.texture.y, b.texture.y, c.texture.y })
-		},
-		kl::float3 {
+	},
+		kl::float3{
 			interpolate(weights, { a.normal.x, b.normal.x, c.normal.x }),
 			interpolate(weights, { a.normal.y, b.normal.y, c.normal.y }),
 			interpolate(weights, { a.normal.z, b.normal.z, c.normal.z })
-		}
+	}
 	};
 }
 

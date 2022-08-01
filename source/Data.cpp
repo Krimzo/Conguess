@@ -17,41 +17,41 @@ void ReadCountryData(const std::string& filePath) {
 	for (std::string line; std::getline(file, line);) {
 		for (auto& c : line) {
 			switch (c) {
-			case '{':
-				readingName = false;
-				country.name = ss.str();
-				ss = {};
-				break;
-			case '}':
-				readingName = true;
-				Data::countries.push_back(country);
-				country = {};
-				ss = {};
-				break;
+				case '{':
+					readingName = false;
+					country.name = ss.str();
+					ss = {};
+					break;
+				case '}':
+					readingName = true;
+					Data::countries.push_back(country);
+					country = {};
+					ss = {};
+					break;
 
-			case '[':
-				countryPolygon = {};
-				break;
-			case ']':
-				country.polygons.push_back(countryPolygon);
-				break;
+				case '[':
+					countryPolygon = {};
+					break;
+				case ']':
+					country.polygons.push_back(countryPolygon);
+					break;
 
-			case '(':
-				polygonCoord = {};
-				ss = {};
-				break;
-			case ',':
-				polygonCoord.x = std::stof(ss.str());
-				ss = {};
-				break;
-			case ')':
-				polygonCoord.y = std::stof(ss.str());
-				countryPolygon.coords.push_back(polygonCoord);
-				break;
+				case '(':
+					polygonCoord = {};
+					ss = {};
+					break;
+				case ',':
+					polygonCoord.x = std::stof(ss.str());
+					ss = {};
+					break;
+				case ')':
+					polygonCoord.y = std::stof(ss.str());
+					countryPolygon.coords.push_back(polygonCoord);
+					break;
 
-			default:
-				ss << c;
-				break;
+				default:
+					ss << c;
+					break;
 			}
 		}
 	}
@@ -78,7 +78,7 @@ void DrawCountryBoundaries(kl::image& image, const std::vector<Data::Polygon>& p
 			const kl::int2 startPos = CoordsToPoint(image.size(), lastCoord);
 			const kl::int2 endPos = CoordsToPoint(image.size(), coord);
 			for (int i = 0; i < 2; i++) {
-				image.drawLine(startPos + i, endPos + i, kl::colors::white);
+				image.drawLine(startPos + kl::int2(i, i), endPos + kl::int2(i, i), kl::colors::white);
 			}
 			lastCoord = coord;
 		}

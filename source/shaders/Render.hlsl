@@ -1,20 +1,17 @@
 // Vertex shader
-cbuffer VS_CB : register(b0)
-{
+cbuffer VS_CB : register(b0) {
     matrix wMatrix;
     matrix vpMatrix;
 }
 
-struct VS_OUT
-{
+struct VS_OUT {
     float4 screen : SV_POSITION;
     float3 world : WRLD;
     float2 textur : TEX;
     float3 normal : NORM;
 };
 
-VS_OUT vShader(float3 pos : POS_IN, float2 tex : TEX_IN, float3 norm : NORM_IN)
-{
+VS_OUT vShader(float3 pos : POS_IN, float2 tex : TEX_IN, float3 norm : NORM_IN) {
     VS_OUT data;
     
     data.world = mul(float4(pos, 1.0f), wMatrix).xyz;
@@ -26,8 +23,7 @@ VS_OUT vShader(float3 pos : POS_IN, float2 tex : TEX_IN, float3 norm : NORM_IN)
 }
 
 // Pixel shader
-cbuffer PS_CB : register(b0)
-{
+cbuffer PS_CB : register(b0) {
     float4 sunDirection;
     float4 cameraPosition;
     float4 miscData;
@@ -42,8 +38,7 @@ Texture2D earthRoughnessMap : register(t4);
 Texture2D earthBoundariesMap : register(t5);
 Texture2D earthIndiciesMap : register(t6);
 
-float3 GetFragNormal(float3 fragPosition, float3 fragNormal, float2 fragTexture)
-{
+float3 GetFragNormal(float3 fragPosition, float3 fragNormal, float2 fragTexture) {
     const float3 Q1 = ddx(fragPosition);
     const float3 Q2 = ddy(fragPosition);
     const float2 st1 = ddx(fragTexture);
@@ -54,46 +49,37 @@ float3 GetFragNormal(float3 fragPosition, float3 fragNormal, float2 fragTexture)
     float3 newNormal = normalize(earthNormalMap.Sample(defaultSampler, fragTexture).xyz * 2.0f - 1.0f);
     return normalize(mul(newNormal, TBN));
 }
-float GetFragRoughnes(float2 fragTexture)
-{
+float GetFragRoughnes(float2 fragTexture) {
     return earthRoughnessMap.Sample(defaultSampler, fragTexture).x;
 }
 
-struct PS_OUT
-{
+struct PS_OUT {
     float4 color : SV_TARGET0;
     float4 index : SV_TARGET1;
 };
 
-int From4Values(float val)
-{
-    if (val < 0.2f)
-    {
+int From4Values(float val) {
+    if (val < 0.2f) {
         return 0;
     }
-    if (val < 0.5f)
-    {
+    if (val < 0.5f) {
         return 1;
     }
-    if (val < 0.8f)
-    {
+    if (val < 0.8f) {
         return 2;
     }
     return 3;
 }
-int From4Values(float4 data)
-{
+int From4Values(float4 data) {
     int value = 0;
     int powers[4] = { 64, 16, 4, 1 };
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
         value += From4Values(data[i]) * powers[i];
     }
     return value;
 }
 
-PS_OUT pShader(VS_OUT data)
-{
+PS_OUT pShader(VS_OUT data) {
     data.normal = GetFragNormal(data.world, normalize(data.normal), data.textur);
     
     const float ambientFactor = 0.05f;

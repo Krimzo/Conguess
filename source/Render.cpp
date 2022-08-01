@@ -21,7 +21,7 @@ void Render::Initialize() {
 	shaders = Game::gpu->newShaders(kl::file::readString("source/shaders/Render.hlsl"));
 
 	Game::Log("Creating render targets");
-	Render::Resize(Game::window.size());
+	Render::Resize(Game::window->size());
 
 	Game::Log("Loading box mesh");
 	mesh = Game::gpu->newVertexBuffer("resource/meshes/sphere.obj");

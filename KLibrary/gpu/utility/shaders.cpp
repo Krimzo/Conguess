@@ -12,7 +12,7 @@ kl::dx::shader::vertex kl::gpu::newVertexShader(const std::string& source, kl::d
 	ID3DBlob* blobError = nullptr;
 
 	D3DCompile(source.c_str(), source.size(), nullptr, nullptr, nullptr, "vShader", "vs_5_0", NULL, NULL, &blobData, &blobError);
-	std::string errorMessage = blobError ? (char*)blobError->GetBufferPointer() : "Unknown";
+	std::string errorMessage = blobError ? (char*) blobError->GetBufferPointer() : "Unknown";
 	kl::console::error(!blobData, "Failed to compile vertex shader, Message: " + errorMessage);
 
 	kl::dx::shader::vertex vertShader = nullptr;
@@ -21,8 +21,8 @@ kl::dx::shader::vertex kl::gpu::newVertexShader(const std::string& source, kl::d
 
 	if (outLayout) {
 		kl::dx::shader::desc::input defaulDesc[3] = {
-			{  "POS_IN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{  "TEX_IN", 0,    DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "POS_IN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEX_IN", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORM_IN", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
 
@@ -41,7 +41,7 @@ kl::dx::shader::pixel kl::gpu::newPixelShader(const std::string& source) {
 	ID3DBlob* blobError = nullptr;
 
 	D3DCompile(source.c_str(), source.size(), nullptr, nullptr, nullptr, "pShader", "ps_5_0", NULL, NULL, &blobData, &blobError);
-	std::string errorMessage = blobError ? (char*)blobError->GetBufferPointer() : "Unknown";
+	std::string errorMessage = blobError ? (char*) blobError->GetBufferPointer() : "Unknown";
 	kl::console::error(!blobData, "Failed to compile pixel shader, Message: " + errorMessage);
 
 	kl::dx::shader::pixel pixlShader = nullptr;
@@ -57,7 +57,7 @@ kl::dx::shader::geometry kl::gpu::newGeometryShader(const std::string& source) {
 	ID3DBlob* blobError = nullptr;
 
 	D3DCompile(source.c_str(), source.size(), nullptr, nullptr, nullptr, "gShader", "gs_5_0", NULL, NULL, &blobData, &blobError);
-	std::string errorMessage = blobError ? (char*)blobError->GetBufferPointer() : "Unknown";
+	std::string errorMessage = blobError ? (char*) blobError->GetBufferPointer() : "Unknown";
 	kl::console::error(!blobData, "Failed to compile geometry shader, Message: " + errorMessage);
 
 	kl::dx::shader::geometry geomShader = nullptr;
@@ -73,7 +73,7 @@ kl::dx::shader::compute kl::gpu::newComputeShader(const std::string& source) {
 	ID3DBlob* blobError = nullptr;
 
 	D3DCompile(source.c_str(), source.size(), nullptr, nullptr, nullptr, "cShader", "cs_5_0", NULL, NULL, &blobData, &blobError);
-	std::string errorMessage = blobError ? (char*)blobError->GetBufferPointer() : "Unknown";
+	std::string errorMessage = blobError ? (char*) blobError->GetBufferPointer() : "Unknown";
 	kl::console::error(!blobData, "Failed to compile compute shader, Message: " + errorMessage);
 
 	kl::dx::shader::compute compShader = nullptr;

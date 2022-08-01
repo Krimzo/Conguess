@@ -10,23 +10,27 @@ using uint64 = uint64_t;
 
 namespace kl {
 	namespace math {
-		inline constexpr double pi = 3.14159265358979;
+		inline constexpr float pi = 3.14159265358979f;
 	}
 
 	namespace to {
-		template<typename T> inline T radians(const T& degs) {
-			static const double conv = kl::math::pi / 180.0;
-			return T(degs * conv);
+		template<typename T>
+		inline T radians(const T& degs) {
+			static const float conversion = kl::math::pi / 180.0f;
+			return T(degs * conversion);
 		}
-		template<typename T> inline T degrees(const T& rads) {
-			static const double conv = 180.0 / kl::math::pi;
-			return T(rads * conv);
+
+		template<typename T>
+		inline T degrees(const T& rads) {
+			static const float conversion = 180.0f / kl::math::pi;
+			return T(rads * conversion);
 		}
 	}
 }
 
 namespace kl {
-	template<typename T> struct vector2 {
+	template<typename T>
+	struct vector2 {
 		union {
 			struct {
 				T x, y;
@@ -40,18 +44,24 @@ namespace kl {
 			T data[2] = {};
 		};
 
-		vector2() {}
-		vector2(const T& a) : x(a), y(a) {}
-		vector2(const T& x, const T& y) : x(x), y(y) {}
+		vector2()
+			: x(), y() {}
+
+		template<typename T0, typename T1>
+		vector2(const T0& x, const T1& y)
+			: x(T(x)), y(T(y)) {}
 
 		// Getters
 		T& operator[](uint64 ind) {
 			return data[ind];
 		}
+
 		const T& operator[](uint64 ind) const {
 			return data[ind];
 		}
-		template<typename T0> operator kl::vector2<T0>() const {
+
+		template<typename T0>
+		operator kl::vector2<T0>() const {
 			return { T0(x), T0(y) };
 		}
 
@@ -115,7 +125,7 @@ namespace kl {
 
 		// Division
 		void divide(const T& val, kl::vector2<T>& out) const {
-			const double recVal = 1.0 / val;
+			const float recVal = 1.0f / val;
 			for (int i = 0; i < 2; i++) {
 				out[i] = T(data[i] * recVal);
 			}
@@ -226,7 +236,8 @@ namespace kl {
 	};
 
 	// std::cout
-	template<typename T> inline std::ostream& operator<<(std::ostream& stream, const kl::vector2<T>& obj) {
+	template<typename T>
+	inline std::ostream& operator<<(std::ostream& stream, const kl::vector2<T>& obj) {
 		stream << std::fixed << std::setprecision(2);
 		stream << "(" << obj.x << ", " << obj.y << ")";
 		return stream;

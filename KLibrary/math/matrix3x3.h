@@ -5,8 +5,8 @@
 
 
 namespace kl {
-	template<typename T> struct matrix3x3 : public kl::matrix<T, 3, 3> {
-
+	template<typename T>
+	struct matrix3x3 : public kl::matrix<T, 3, 3> {
 		matrix3x3() {}
 		matrix3x3(const kl::vector3<T>& r0, const kl::vector3<T>& r1, const kl::vector3<T>& r2) {
 			(*this)[0] = r0.x; (*this)[1] = r0.y; (*this)[2] = r0.z;
@@ -42,7 +42,6 @@ namespace kl {
 			temp[4] = val.y;
 			return temp;
 		}
-
 	};
 }
 

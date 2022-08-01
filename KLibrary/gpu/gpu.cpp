@@ -5,10 +5,6 @@
 #include <fstream>
 #include <vector>
 
-#ifdef KL_USING_IMGUI
-#include "imgui_impl_dx11.h"
-#endif
-
 #include "render/vertex.h"
 #include "utility/console.h"
 
@@ -59,17 +55,9 @@ kl::gpu::gpu(HWND hwnd, bool predefineCBuffers) : m_CBuffersPredefined(predefine
 			m_PixelCBuffers[i] = newCBuffer((i + 1) * 16);
 		}
 	}
-
-#ifdef KL_USING_IMGUI
-	ImGui_ImplDX11_Init(m_Device, m_Context);
-#endif
 }
 
 kl::gpu::~gpu() {
-#ifdef KL_USING_IMGUI
-	ImGui_ImplDX11_Shutdown();
-#endif
-
 	m_Chain->SetFullscreenState(false, nullptr);
 
 	for (auto& ref : m_Children) {
@@ -141,7 +129,7 @@ void kl::gpu::bindInternal(const std::vector<kl::dx::view::target> targets, kl::
 }
 
 void kl::gpu::bindTargets(const std::vector<kl::dx::view::target> targets, kl::dx::view::depth depthView) {
-	m_Context->OMSetRenderTargets(uint(targets.size()), &targets[0], depthView ? depthView : m_DepthBuffer);
+	m_Context->OMSetRenderTargets(uint(targets.size()), targets.data(), depthView ? depthView : m_DepthBuffer);
 }
 
 void kl::gpu::clearColor(const kl::float4& color) {

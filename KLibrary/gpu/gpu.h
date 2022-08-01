@@ -14,11 +14,15 @@
 #include "graphics/image.h"
 
 
+inline constexpr nullptr_t null = nullptr;
 inline constexpr uint KL_CBUFFER_PREDEFINED_SIZE = 64;
 
 namespace kl {
-	template<typename T> using reference = std::shared_ptr<T>;
-	template<typename T, typename... Args> inline kl::reference<T> make(const Args&... args) {
+	template<typename T>
+	using ref = std::shared_ptr<T>;
+
+	template<typename T, typename... Args>
+	inline kl::ref<T> make(const Args&... args) {
 		return std::make_shared<T>(args...);
 	}
 }
@@ -30,7 +34,8 @@ namespace kl {
 		kl::dx::shader::input inLayout = nullptr;
 
 		shaders() {}
-		shaders(kl::dx::shader::vertex vertexS, kl::dx::shader::pixel pixelS, kl::dx::shader::input inLayout) : vertexS(vertexS), pixelS(pixelS), inLayout(inLayout) {}
+		shaders(kl::dx::shader::vertex vertexS, kl::dx::shader::pixel pixelS, kl::dx::shader::input inLayout)
+			: vertexS(vertexS), pixelS(pixelS), inLayout(inLayout) {}
 	};
 }
 
@@ -106,7 +111,9 @@ namespace kl {
 		void setCBufferData(kl::dx::buffer buff, const void* data);
 		void bindVertexCBuffer(kl::dx::buffer buff, uint slot);
 		void bindPixelCBuffer(kl::dx::buffer buff, uint slot);
-		template<typename T> inline bool autoVertexCBuffer(const T& data, uint slot = 0) {
+
+		template<typename T>
+		inline bool autoVertexCBuffer(const T& data, uint slot = 0) {
 			if ((!m_CBuffersPredefined) || (sizeof(T) > (KL_CBUFFER_PREDEFINED_SIZE * 16)) || (sizeof(T) % 16)) {
 				return false;
 			}
@@ -115,7 +122,9 @@ namespace kl {
 			setCBufferData(chosenBuffer, &data);
 			return true;
 		}
-		template<typename T> inline bool autoPixelCBuffer(const T& data, uint slot = 0) {
+
+		template<typename T>
+		inline bool autoPixelCBuffer(const T& data, uint slot = 0) {
 			if ((!m_CBuffersPredefined) || (sizeof(T) > (KL_CBUFFER_PREDEFINED_SIZE * 16)) || (sizeof(T) % 16)) {
 				return false;
 			}

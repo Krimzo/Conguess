@@ -23,7 +23,7 @@ void Postprocess::Update() {
 
 	kl::float4 miscData = {
 		float(renderBounds),
-		float(Game::window.mouse.lmb),
+		float(Game::window->mouse.lmb),
 		0.0f,
 		0.0f
 	};

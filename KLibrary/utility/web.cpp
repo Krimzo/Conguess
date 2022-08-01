@@ -7,7 +7,7 @@
 
 
 std::string kl::web::siteData(const std::string& url, uint bufferSize) {
-	// Create browser
+// Create browser
 	HINTERNET connection = InternetOpenA("Browser", INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
 	if (!connection) {
 		printf("Failed to connect!\n");
@@ -26,7 +26,7 @@ std::string kl::web::siteData(const std::string& url, uint bufferSize) {
 	std::string dataBuffer;
 	dataBuffer.resize(bufferSize);
 	DWORD byteReadCount = 0;
-	while (InternetReadFile(openAddress, &dataBuffer[0], (DWORD)dataBuffer.size(), &byteReadCount) && byteReadCount) {
+	while (InternetReadFile(openAddress, &dataBuffer[0], (DWORD) dataBuffer.size(), &byteReadCount) && byteReadCount) {
 		for (DWORD i = 0; i < byteReadCount; i++) {
 			finalData.push_back(dataBuffer[i]);
 		}

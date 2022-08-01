@@ -5,7 +5,7 @@
 
 kl::dx::texture kl::gpu::newTextureBB() {
 	kl::dx::texture buffAddrs = nullptr;
-	m_Chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&buffAddrs);
+	m_Chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**) &buffAddrs);
 	kl::console::error(!buffAddrs, "Failed to create backbuffer texture");
 
 	m_Children.insert(buffAddrs);
@@ -57,12 +57,12 @@ kl::dx::texture kl::gpu::newTexture(const kl::image& front, const kl::image& bac
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 	kl::dx::desc::subres texData[6] = {
-		{  right.data(), front.width() * sizeof(kl::color), 0 },
-		{   left.data(), front.width() * sizeof(kl::color), 0 },
-		{    top.data(), front.width() * sizeof(kl::color), 0 },
+		{ right.data(), front.width() * sizeof(kl::color), 0 },
+		{ left.data(), front.width() * sizeof(kl::color), 0 },
+		{ top.data(), front.width() * sizeof(kl::color), 0 },
 		{ bottom.data(), front.width() * sizeof(kl::color), 0 },
-		{  front.data(), front.width() * sizeof(kl::color), 0 },
-		{   back.data(), front.width() * sizeof(kl::color), 0 }
+		{ front.data(), front.width() * sizeof(kl::color), 0 },
+		{ back.data(), front.width() * sizeof(kl::color), 0 }
 	};
 
 	return newTexture(&texDesc, texData);
