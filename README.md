@@ -1,2 +1,2 @@
 # World Guesser
-Simple 3D country guesser.
+3D country guesser.
