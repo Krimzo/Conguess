@@ -3,7 +3,6 @@ import requests
 import bs4 as bs
 
 
-# Wanted countries
 def get_wanted_countries(min_size):
     original_html = requests.get(
         "https://www.worldometers.info/geography/alphabetical-list-of-countries/"
@@ -28,22 +27,18 @@ def get_wanted_countries(min_size):
     return wanted
 
 
-wanted_countries = get_wanted_countries(30000)
-
-
-# Read
-file = open("countries.json")
-full_data = json.load(file)
-file.close()
-
-
-# Write
 def write_coords(file, coords):
     file.write("[")
     for coord in coords:
         file.write("(" + str(coord[1]) + "," + str(coord[0]) + ")")
     file.write("]")
 
+
+wanted_countries = get_wanted_countries(30000)
+
+file = open("countries.json")
+full_data = json.load(file)
+file.close()
 
 file = open("countries.txt", "w")
 for feature in full_data["features"]:
