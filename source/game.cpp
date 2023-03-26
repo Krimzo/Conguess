@@ -65,10 +65,6 @@ int main()
 	render::initialize();
 	postprocess::initialize();
 
-#ifndef _DEBUG
-	kl::console::set_enabled(false);
-#endif
-
 	game::window->keyboard.r.on_press();
 
 	// Update
