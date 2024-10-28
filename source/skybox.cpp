@@ -19,7 +19,7 @@ static kl::dx::shader_view process_box_image(const kl::image& image)
 			return game::gpu->new_shader_view(game::gpu->new_texture(front, back, left, right, top, bottom));
 		}
 	}
-	kl::assert(true, "Texture has unsupported ratio!");
+	kl::assert(false, "Texture has unsupported ratio!");
 	return nullptr;
 }
 

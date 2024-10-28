@@ -7,7 +7,7 @@ static void read_country_data(const std::string& filepath)
 {
 	game::log("Reading country data");
 	std::ifstream file(filepath);
-	kl::assert(!file.is_open(), "Failed to open file \"" + filepath + "\"");
+	kl::assert(file.is_open(), "Failed to open file \"" + filepath + "\"");
 
 	std::stringstream ss = {};
 	country country = {};
