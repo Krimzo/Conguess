@@ -1,13 +1,13 @@
 #pragma once
 
-#include "klib.h"
+#include "klibrary.h"
 
 
 namespace input
 {
-	inline kl::float2 mouse_geo_location = {};
-	inline int mouse_country_index = -1;
+inline kl::float2 mouse_geo_location = {};
+inline int mouse_country_index = -1;
 
-	void initialize();
-	void update();
+void initialize();
+void update();
 }
