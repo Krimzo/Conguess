@@ -1,16 +1,19 @@
 #pragma once
 
-#include "klibrary.h"
+#include "helper.h"
 
 
-namespace postprocess
+struct ConguessPostprocess
 {
-inline kl::dx::depth_state depth_state = nullptr;
-inline kl::shaders shaders = {};
-inline kl::dx::buffer mesh = nullptr;
+    Conguess& conguess;
 
-inline bool render_bounds = false;
+    kl::dx::DepthState depth_state;
+    kl::Shaders shaders;
+    kl::dx::Buffer mesh;
 
-void initialize();
-void update();
-}
+    bool render_bounds = false;
+
+    ConguessPostprocess( Conguess& conguess );
+
+    void update();
+};

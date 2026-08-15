@@ -1,13 +1,19 @@
 #pragma once
 
-#include "klibrary.h"
+#include "helper.h"
 
 
-namespace input
+struct ConguessInput
 {
-inline kl::float2 mouse_geo_location = {};
-inline int mouse_country_index = -1;
+    Conguess& conguess;
 
-void initialize();
-void update();
-}
+    kl::Float2 mouse_geo_location{};
+    int mouse_country_index = -1;
+
+    ConguessInput( Conguess& conguess );
+
+    void update();
+
+private:
+    void new_random_country();
+};

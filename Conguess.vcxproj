@@ -63,12 +63,13 @@
     <ClCompile Include="klibrary\klibrary\source\window\input\keyboard.cpp" />
     <ClCompile Include="klibrary\klibrary\source\window\input\mouse.cpp" />
     <ClCompile Include="klibrary\klibrary\source\window\window.cpp" />
-    <ClCompile Include="source\data.cpp" />
-    <ClCompile Include="source\game.cpp" />
+    <ClCompile Include="source\country_data.cpp" />
+    <ClCompile Include="source\conguess.cpp" />
     <ClCompile Include="source\input.cpp" />
     <ClCompile Include="source\postprocess.cpp" />
-    <ClCompile Include="source\render.cpp" />
+    <ClCompile Include="source\earth.cpp" />
     <ClCompile Include="source\skybox.cpp" />
+    <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="klibrary\klibrary\source\apis\apis.h" />
@@ -157,11 +158,12 @@
     <ClInclude Include="klibrary\klibrary\source\window\input\keyboard.h" />
     <ClInclude Include="klibrary\klibrary\source\window\input\mouse.h" />
     <ClInclude Include="klibrary\klibrary\source\window\window.h" />
-    <ClInclude Include="source\data.h" />
-    <ClInclude Include="source\game.h" />
+    <ClInclude Include="source\country_data.h" />
+    <ClInclude Include="source\conguess.h" />
+    <ClInclude Include="source\helper.h" />
     <ClInclude Include="source\input.h" />
     <ClInclude Include="source\postprocess.h" />
-    <ClInclude Include="source\render.h" />
+    <ClInclude Include="source\earth.h" />
     <ClInclude Include="source\skybox.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

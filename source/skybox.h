@@ -1,15 +1,18 @@
 #pragma once
 
-#include "klibrary.h"
+#include "helper.h"
 
 
-namespace skybox
+struct ConguessSkybox
 {
-inline kl::dx::depth_state depth_state = nullptr;
-inline kl::shaders shaders = {};
-inline kl::dx::buffer mesh = nullptr;
-inline kl::dx::shader_view texture = nullptr;
+    Conguess& conguess;
 
-void initialize();
-void update();
-}
+    kl::dx::DepthState depth_state{};
+    kl::dx::Buffer mesh{};
+    kl::dx::ShaderView texture{};
+    kl::Shaders shaders{};
+
+    ConguessSkybox( Conguess& conguess );
+
+    void update();
+};

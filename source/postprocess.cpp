@@ -1,36 +1,38 @@
-#include "postprocess.h"
-
-#include "render.h"
-#include "game.h"
+#include "conguess.h"
 
 
-void postprocess::initialize()
+ConguessPostprocess::ConguessPostprocess( Conguess& conguess )
+    : conguess( conguess )
 {
-    depth_state = game::gpu->new_depth_state( false, false, false );
+    auto& gpu = conguess.gpu;
 
-    game::log( "Compiling postprocess shaders" );
-    shaders = game::gpu->new_shaders( kl::files::read_string( "source/shaders/postprocess.hlsl" ) );
+    depth_state = gpu.create_depth_state( false, false, false );
 
-    game::log( "Loading screen mesh" );
-    mesh = game::gpu->generate_screen_mesh();
+    log( "Compiling postprocess shaders" );
+    shaders = gpu.create_shaders( kl::read_file_string( "shaders/postprocess.hlsl" ) );
+
+    log( "Loading screen mesh" );
+    mesh = gpu.create_screen_mesh();
 }
 
-void postprocess::update()
+void ConguessPostprocess::update()
 {
-    game::gpu->bind_internal_targets();
-    game::gpu->bind_depth_state( depth_state );
-    game::gpu->bind_shaders( shaders );
+    auto& gpu = conguess.gpu;
 
-    game::gpu->bind_pixel_shader_view( render::render_shader_view, 0 );
-    game::gpu->bind_pixel_shader_view( render::index_shader_view, 1 );
+    gpu.bind_internal_views();
+    gpu.bind_depth_state( depth_state );
+    gpu.bind_shaders( shaders );
 
-    const kl::float4 misc_data = {
-        static_cast<float>( render_bounds ),
-        static_cast<float>( game::window->mouse.left.state() ),
+    gpu.bind_shader_view_for_pixel_shader( conguess.render_shader_view, 0 );
+    gpu.bind_shader_view_for_pixel_shader( conguess.index_shader_view, 1 );
+
+    const kl::Float4 misc_data = {
+        (float) render_bounds,
+        (float) conguess.window.mouse.left,
         0.0f,
         0.0f
     };
-    game::gpu->set_pixel_const_buffer( misc_data );
+    shaders.upload( misc_data );
 
-    game::gpu->draw_vertex_buffer( mesh );
+    gpu.draw( mesh );
 }
