@@ -1,28 +1,24 @@
-// Vertex shader
-struct v_out
+float4x4 VP;
+
+TextureCube SKYBOX_TEXTURE : register(t0);
+
+SamplerState TEXTURE_SAMPLER : register(s0);
+
+struct VData
 {
-    float4 world_position : SV_Position;
-    float3 texture_coords : Transfer_Texture;
+    float4 position : SV_Position;
+    float3 uvw : VS_UVW;
 };
 
-cbuffer SB_CB : register(b0)
+VData v_shader(float3 position : KL_Position)
 {
-    matrix vp_matrix;
-}
-
-v_out v_shader(const float3 position : KL_Position)
-{
-    v_out data;
-    data.world_position = mul(float4(position, 0.0f), vp_matrix).xyww;
-    data.texture_coords = position;
+    VData data;
+    data.position = mul(float4(position, 0.0f), VP).xyww;
+    data.uvw = position;
     return data;
 }
 
-// Pixel shader
-SamplerState box_sampler : register(s0);
-TextureCube box_texture : register(t0);
-
-float4 p_shader(const v_out data) : SV_Target
+float4 p_shader(VData data) : SV_Target
 {
-    return box_texture.Sample(box_sampler, data.texture_coords);
+    return SKYBOX_TEXTURE.Sample(TEXTURE_SAMPLER, data.uvw);
 }

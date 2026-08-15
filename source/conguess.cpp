@@ -11,16 +11,20 @@ Conguess::Conguess()
             camera.update_aspect_ratio( size );
             this->resize( size );
         } );
-    window.maximize();
+    window.resize( { 1920, 1080 } );
 
     gpu.bind_sampler_state_for_pixel_shader( gpu.create_sampler_state( true, false ), 0 );
     camera.position = camera.forward() * -2.0f;
+
+    log( "Done." );
 }
 
 bool Conguess::update()
 {
     timer.update();
     input.update();
+    gpu.clear_target_view( render_target_view );
+    gpu.clear_target_view( index_target_view );
     gpu.clear_internal();
     skybox.update();
     earth.update();

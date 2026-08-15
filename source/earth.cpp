@@ -8,87 +8,55 @@ ConguessEarth::ConguessEarth( Conguess& conguess )
 
     depth_state = gpu.create_depth_state( true, false, false );
 
-    log( "Compiling earth shaders" );
-    shaders = gpu.create_shaders( kl::read_file_string( "shaders/earth.hlsl" ) );
-
-    log( "Loading box mesh" );
-    mesh = gpu.create_vertex_buffer( (std::string_view) "meshes/sphere.obj", true );
-
-    log( "Loading earth day texture" );
-    earth_day_texture = gpu.create_shader_view( gpu.create_texture(
-        kl::Image{ "textures/earth_day.png" } ), {} );
-
-    log( "Loading earth night texture" );
-    earth_night_texture = gpu.create_shader_view( gpu.create_texture(
-        kl::Image{ "textures/earth_night.png" } ), {} );
-
-    log( "Loading earth clouds texture" );
-    earth_clouds_texture = gpu.create_shader_view( gpu.create_texture(
-        kl::Image{ "textures/earth_clouds.png" } ), {} );
-
-    log( "Loading earth normal map" );
-    earth_normal_map = gpu.create_shader_view( gpu.create_texture(
-        kl::Image{ "textures/earth_normal.png" } ), {} );
-
-    log( "Loading earth roughness map" );
-    earth_roughness_map = gpu.create_shader_view( gpu.create_texture(
-        kl::Image{ "textures/earth_roughness.png" } ), {} );
-
-    log( "Loading earth boundaries map" );
-    earth_boundaries_map = gpu.create_shader_view( gpu.create_texture(
-        kl::Image{ "textures/earth_boundaries.png" } ), {} );
-
-    log( "Loading earth indices map" );
-    earth_indices_map = gpu.create_shader_view( gpu.create_texture(
-        kl::Image{ "textures/earth_indices.png" } ), {} );
+    load_shaders( gpu, "earth", shaders );
+    load_mesh( gpu, "sphere", mesh );
+    load_texture( gpu, "earth_day", earth_day_sv );
+    load_texture( gpu, "earth_night", earth_night_sv );
+    load_texture( gpu, "earth_clouds", earth_clouds_sv );
+    load_texture( gpu, "earth_normal", earth_normal_sv );
+    load_texture( gpu, "earth_roughness", earth_roughness_sv );
+    load_texture( gpu, "earth_boundaries", earth_boundaries_sv );
+    load_texture( gpu, "earth_indices", earth_indices_sv );
 }
 
 void ConguessEarth::update()
 {
     auto& gpu = conguess.gpu;
 
-    struct vs_cb
-    {
-        kl::Float4x4 w_matrix{};
-        kl::Float4x4 vp_matrix{};
-    };
-
-    struct ps_cb
-    {
-        kl::Float4 sun_direction{};
-        kl::Float4 camera_position{};
-        kl::Float4 misc_data{};
-    };
-
-    gpu.clear_target_view( conguess.index_target_view, {} );
-
-    gpu.bind_target_depth_views( { conguess.render_target_view.get(), conguess.index_target_view.get() }, {} );
+    gpu.bind_target_depth_views( { conguess.render_target_view.get(), conguess.index_target_view.get() },
+        gpu.back_depth_view() );
     gpu.bind_depth_state( depth_state );
 
-    gpu.bind_shaders( shaders );
-    gpu.bind_shader_view_for_pixel_shader( earth_day_texture, 0 );
-    gpu.bind_shader_view_for_pixel_shader( earth_night_texture, 1 );
-    gpu.bind_shader_view_for_pixel_shader( earth_clouds_texture, 2 );
-    gpu.bind_shader_view_for_pixel_shader( earth_normal_map, 3 );
-    gpu.bind_shader_view_for_pixel_shader( earth_roughness_map, 4 );
-    gpu.bind_shader_view_for_pixel_shader( earth_boundaries_map, 5 );
-    gpu.bind_shader_view_for_pixel_shader( earth_indices_map, 6 );
+    gpu.bind_shader_view_for_pixel_shader( earth_day_sv, 0 );
+    gpu.bind_shader_view_for_pixel_shader( earth_night_sv, 1 );
+    gpu.bind_shader_view_for_pixel_shader( earth_clouds_sv, 2 );
+    gpu.bind_shader_view_for_pixel_shader( earth_normal_sv, 3 );
+    gpu.bind_shader_view_for_pixel_shader( earth_roughness_sv, 4 );
+    gpu.bind_shader_view_for_pixel_shader( earth_boundaries_sv, 5 );
+    gpu.bind_shader_view_for_pixel_shader( earth_indices_sv, 6 );
 
-    vs_cb vs_data{};
-    vs_data.w_matrix = kl::Float4x4::rotation( conguess.sphere_rotation );
-    vs_data.vp_matrix = conguess.camera.matrix();
-    gpu.set_vertex_const_buffer( vs_data );
+    struct alignas( 16 ) CB
+    {
+        kl::Float4x4 W;
+        kl::Float4x4 VP;
+        kl::Float4 SUN_DIRECTION;
+        kl::Float4 CAMERA_POSITION;
+        kl::Float4 MISC_DATA;
+    } cb = {};
 
-    ps_cb ps_data{};
-    ps_data.sun_direction = { kl::normalize( conguess.sun_direction ), 0.0f };
-    ps_data.camera_position = { conguess.camera.position, 0.0f };
-    ps_data.misc_data = {
+    cb.W = kl::Float4x4::rotation( conguess.sphere_rotation );
+    cb.VP = conguess.camera.matrix();
+    cb.SUN_DIRECTION.xyz() = kl::normalize( conguess.sun_direction );
+    cb.CAMERA_POSITION.xyz() = conguess.camera.position;
+    cb.MISC_DATA = {
         conguess.timer.elapsed() / 1800.0f,
         float( conguess.input.mouse_country_index + 1 ),
         (float) render_clouds,
         0.0f
     };
-    gpu.set_pixel_const_buffer( ps_data );
+
+    shaders.upload( cb );
+    gpu.bind_shaders( shaders );
 
     gpu.draw( mesh );
 

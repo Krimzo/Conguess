@@ -34,24 +34,23 @@ def write_coords(file, coords):
     file.write("]")
 
 
-wanted_countries = get_wanted_countries(30000)
-
-file = open("countries.json")
-full_data = json.load(file)
-file.close()
-
-file = open("countries.txt", "w")
-for feature in full_data["features"]:
-    country_name = feature["properties"]["ADMIN"].replace("(", "").replace(")", "")
-    if country_name.lower() in wanted_countries:
-        file.write(country_name)
-        file.write("{")
-        for polygon in feature["geometry"]["coordinates"]:
-            if feature["geometry"]["type"].lower() == "multipolygon":
-                for sub_polygon in polygon:
-                    write_coords(file, sub_polygon)
-            else:
-                write_coords(file, polygon)
-        file.write("}\n")
-        print("Saved data for " + country_name)
-file.close()
+if __name__ == "__main__":
+    wanted_countries = get_wanted_countries(30000)
+    file = open("countries.json")
+    full_data = json.load(file)
+    file.close()
+    file = open("countries.txt", "w")
+    for feature in full_data["features"]:
+        country_name = feature["properties"]["ADMIN"].replace("(", "").replace(")", "")
+        if country_name.lower() in wanted_countries:
+            file.write(country_name)
+            file.write("{")
+            for polygon in feature["geometry"]["coordinates"]:
+                if feature["geometry"]["type"].lower() == "multipolygon":
+                    for sub_polygon in polygon:
+                        write_coords(file, sub_polygon)
+                else:
+                    write_coords(file, polygon)
+            file.write("}\n")
+            print("Saved data for " + country_name)
+    file.close()

@@ -11,13 +11,13 @@ struct ConguessEarth
     kl::dx::Buffer mesh;
     kl::Shaders shaders;
 
-    kl::dx::ShaderView earth_day_texture;
-    kl::dx::ShaderView earth_night_texture;
-    kl::dx::ShaderView earth_clouds_texture;
-    kl::dx::ShaderView earth_normal_map;
-    kl::dx::ShaderView earth_roughness_map;
-    kl::dx::ShaderView earth_boundaries_map;
-    kl::dx::ShaderView earth_indices_map;
+    kl::dx::ShaderView earth_day_sv;
+    kl::dx::ShaderView earth_night_sv;
+    kl::dx::ShaderView earth_clouds_sv;
+    kl::dx::ShaderView earth_normal_sv;
+    kl::dx::ShaderView earth_roughness_sv;
+    kl::dx::ShaderView earth_boundaries_sv;
+    kl::dx::ShaderView earth_indices_sv;
 
     bool render_clouds = true;
 

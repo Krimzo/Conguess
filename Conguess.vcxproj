@@ -65,6 +65,7 @@
     <ClCompile Include="klibrary\klibrary\source\window\window.cpp" />
     <ClCompile Include="source\country_data.cpp" />
     <ClCompile Include="source\conguess.cpp" />
+    <ClCompile Include="source\helper.cpp" />
     <ClCompile Include="source\input.cpp" />
     <ClCompile Include="source\postprocess.cpp" />
     <ClCompile Include="source\earth.cpp" />
