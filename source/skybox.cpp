@@ -40,12 +40,12 @@ void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::Shade
     const kl::Image image{ path };
     if ( image.pixel_count() == 0 )
     {
-        log( kl::colors::RED, "Failed to load cube image ", path, kl::colors::CONSOLE );
+        log_error( "Failed to load cube image ", path );
         return;
     }
     if ( image.width() % 4 != 0 || image.height() % 3 != 0 )
     {
-        log( kl::colors::RED, "Cube image ", path, " has unsupported ratio", kl::colors::CONSOLE );
+        log_error( "Cube image ", path, " has unsupported ratio" );
         return;
     }
 
@@ -53,7 +53,7 @@ void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::Shade
     const int part_height = image.height() / 3;
     if ( part_width != part_height )
     {
-        log( kl::colors::RED, "Cube image ", path, " width part and height part are not the same", kl::colors::CONSOLE );
+        log_error( "Cube image ", path, " width part and height part are not the same" );
         return;
     }
 
@@ -68,15 +68,15 @@ void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::Shade
     const kl::dx::Texture cube_texture = gpu.create_cube_texture( front, back, left, right, top, bottom );
     if ( !cube_texture )
     {
-        log( kl::colors::RED, "Failed to load cube texture ", path, kl::colors::CONSOLE );
+        log_error( "Failed to load cube texture ", path );
         return;
     }
     log( "Creating cube shader view ", path );
     out_sv = gpu.create_shader_view( cube_texture, {} );
     if ( !out_sv )
     {
-        log( kl::colors::RED, "Failed to create cube shader view ", path, kl::colors::CONSOLE );
+        log_error( "Failed to create cube shader view ", path );
         return;
     }
-    log( kl::colors::GREEN, "Cube texture ", path, " is good.", kl::colors::CONSOLE );
+    log_success( "Cube texture ", path, " is good." );
 }
