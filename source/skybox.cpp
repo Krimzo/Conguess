@@ -9,6 +9,7 @@ ConguessSkybox::ConguessSkybox( Conguess& conguess )
     auto& gpu = conguess.gpu;
 
     mesh = gpu.create_cube_mesh( 1.0f );
+    raster_state = gpu.create_raster_state( false, false );
     load_shaders( gpu, "skybox", shaders );
     load_box_texture( gpu, "textures/stars_milky.jpg", texture );
     sampler = gpu.create_sampler_state( true, false );
@@ -19,6 +20,7 @@ void ConguessSkybox::update()
     auto& gpu = conguess.gpu;
 
     gpu.bind_target_depth_view( conguess.render_target_view, {} );
+    gpu.bind_raster_state( raster_state );
 
     gpu.bind_shader_view_for_pixel_shader( texture, 0 );
     gpu.bind_sampler_state_for_pixel_shader( sampler, 0 );

@@ -12,7 +12,6 @@ Conguess::Conguess()
             this->resize( size );
         } );
     window.resize( { 1920, 1080 } );
-    camera.position = camera.forward() * -2.0f;
     log( "Done." );
 }
 
@@ -20,6 +19,7 @@ bool Conguess::update()
 {
     timer.update();
     input.update();
+    update_camera();
     gpu.clear_target_view( render_target_view );
     gpu.clear_target_view( info_target_view );
     gpu.clear_internal();
@@ -53,4 +53,11 @@ void Conguess::resize( kl::Int2 size )
     kl::dx::Texture index_texture = gpu.create_texture( &render_texture_desc, {} );
     info_target_view = gpu.create_target_view( index_texture, {} );
     info_shader_view = gpu.create_shader_view( index_texture, {} );
+}
+
+void Conguess::update_camera()
+{
+    constexpr kl::Float3 default_vector = { 0.0f, 0.0f, -1.0f };
+    camera.position = kl::rotate( default_vector, { 1.0f, 0.0f, 0.0f }, rotations.x ) * camera_distance;
+    camera.set_forward( -camera.position );
 }

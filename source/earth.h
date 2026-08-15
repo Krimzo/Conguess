@@ -8,6 +8,7 @@ struct ConguessEarth
     Conguess& conguess;
 
     kl::dx::Buffer mesh;
+    kl::dx::RasterState raster_state;
     kl::dx::DepthState depth_state;
     kl::Shaders shaders;
     kl::dx::ShaderView earth_day_sv;

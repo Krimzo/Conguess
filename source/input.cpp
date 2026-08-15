@@ -23,7 +23,71 @@
 
 ConguessInput::ConguessInput( Conguess& conguess )
     :conguess( conguess )
+{}
+
+void ConguessInput::update()
 {
+    static constexpr float MIN_CAMERA_DISTANCE = 1.05f;
+    static constexpr float VERTICAL_ANGLE_LIMIT = 85.0f;
+    static constexpr float SCROLL_MULTI = 0.05f;
+    static constexpr kl::Float2 ANGLE_MULTI{ 0.1f };
+    static constexpr kl::Sphere EARTH_SPHERE{ {}, 1.0f };
+
+    auto& window = conguess.window;
+    auto& mouse = window.mouse;
+    auto& keyboard = window.keyboard;
+    auto& camera = conguess.camera;
+
+    conguess.camera_distance -= mouse.scroll() * SCROLL_MULTI;
+    conguess.camera_distance = kl::max( conguess.camera_distance, MIN_CAMERA_DISTANCE );
+
+    if ( mouse.right.pressed() )
+    {
+        original_rotations = conguess.rotations;
+        original_mouse_pos = mouse.position();
+    }
+
+    if ( mouse.right )
+    {
+        const kl::Int2 mouse_delta = mouse.position() - original_mouse_pos;
+        const kl::Float2 rotation_delta = ANGLE_MULTI * mouse_delta;
+        conguess.rotations = {
+            original_rotations.x + rotation_delta.y,
+            original_rotations.y + rotation_delta.x,
+        };
+        conguess.rotations.x = kl::clamp( conguess.rotations.x, -VERTICAL_ANGLE_LIMIT, VERTICAL_ANGLE_LIMIT );
+    }
+
+    kl::Float3 mouse_earth_intersect;
+    const kl::Ray mouse_ray{ camera.position, kl::inverse( camera.matrix() ), mouse.ndc_pos() };
+    mouse_ray.intersect_sphere( EARTH_SPHERE, &mouse_earth_intersect );
+
+    mouse_geo_location.x = kl::angle( mouse_earth_intersect, { mouse_earth_intersect.x, 0.0f, mouse_earth_intersect.z } );
+    mouse_geo_location.x *= mouse_earth_intersect.y < 0.0f ? -1.0f : 1.0f;
+
+    const kl::Float3 greenwich = ( kl::Float4x4::rotation( { 0.0f, -conguess.rotations.y, 0.0f } ) * kl::Float4{ 1.0f, 0.0f, 0.0f, 1.0f } ).xyz();
+    mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_intersect.x, mouse_earth_intersect.z }, false );
+    mouse_geo_location.y *= mouse_earth_intersect.x < 0.0f ? -1.0f : 1.0f;
+
+    mouse_country_index = -10;
+    for ( int i = 0; i < (int) conguess.country_data.countries.size(); i++ )
+    {
+        auto const& country = conguess.country_data.countries[i];
+        for ( auto const& polygon : country.polygons )
+        {
+            if ( polygon.contains( mouse_geo_location ) )
+            {
+                mouse_country_index = i;
+                goto country_loop_end;
+            }
+        }
+    }
+country_loop_end:;
+
+    kl::print( std::fixed, "Camera Position ", camera.position );
+    kl::print( std::fixed, "Sphere Rotation ", kl::Float3{ 0.0f, -conguess.rotations.y, 0.0f } );
+    kl::print( std::fixed, mouse_geo_location, " -> ", mouse_country_index );
+
     //// Mouse
     //window->mouse.left.on_press = [&]
     //    {
@@ -87,37 +151,6 @@ ConguessInput::ConguessInput( Conguess& conguess )
     //    {
     //        postprocess::render_bounds = !postprocess::render_bounds;
     //    };
-}
-
-void ConguessInput::update()
-{
-    //static int last_scroll = 0;
-    //const int scroll_delta = last_scroll - window->mouse.scroll();
-    //camera.field_of_view = kl::math::minmax( camera.field_of_view + scroll_delta * 5.0f, 5.0f, 90.0f );
-    //last_scroll = window->mouse.scroll();
-
-    //kl::float3 mouse_sphere_intersect = {};
-    //get_mouse_ray().intersect_sphere( sphere, mouse_sphere_intersect );
-
-    //const auto mouse_sphere_intersect_no_y = kl::float3( mouse_sphere_intersect.x, 0.0f, mouse_sphere_intersect.z );
-    //mouse_geo_location.x = mouse_sphere_intersect.angle( mouse_sphere_intersect_no_y );
-    //mouse_geo_location.x *= ( mouse_sphere_intersect.y < 0.0f ) ? -1.0f : 1.0f;
-
-    //const kl::float3 greenwich = ( kl::mat4::rotation( sphere_rotation ) * kl::float4( 1.0f, 0.0f, 0.0f, 1.0f ) ).xyz;
-    //mouse_geo_location.y = kl::float2( greenwich.x, greenwich.z ).angle( kl::float2( mouse_sphere_intersect_no_y.x, mouse_sphere_intersect_no_y.z ), true );
-
-    //for ( int i = 0; i < data::countries.size(); i++ )
-    //{
-    //    for ( auto& polygon : data::countries[i].polygons )
-    //    {
-    //        if ( polygon.contains( mouse_geo_location ) )
-    //        {
-    //            mouse_country_index = i;
-    //            return;
-    //        }
-    //    }
-    //}
-    //mouse_country_index = -10;
 }
 
 void ConguessInput::new_random_country()

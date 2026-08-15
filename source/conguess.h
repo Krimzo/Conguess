@@ -19,8 +19,9 @@ struct Conguess
     kl::dx::TargetView info_target_view;
     kl::dx::ShaderView info_shader_view;
 
-    kl::Float3 sphere_rotation{};
-    kl::Float3 sun_direction = kl::normalize( kl::Float3{ 1.0f, -1.0f, 1.0f } );
+    kl::Float3 sun_direction{ 1.0f, -1.0f, 1.0f };
+    kl::Float2 rotations{ 45.0f, 180.0f }; // x is for camera, y is for sphere
+    float camera_distance = 2.0f;
     int game_random_country = -1;
     int player_score = 0;
 
@@ -36,4 +37,5 @@ struct Conguess
 
 private:
     void resize( kl::Int2 size );
+    void update_camera();
 };

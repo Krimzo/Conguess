@@ -6,7 +6,8 @@ ConguessEarth::ConguessEarth( Conguess& conguess )
 {
     auto& gpu = conguess.gpu;
 
-    mesh = gpu.create_sphere_mesh( 1.0f, 4, true );
+    mesh = gpu.create_sphere_mesh( 1.0f, 25, 50, true );
+    raster_state = gpu.create_raster_state( false, true );
     depth_state = gpu.create_depth_state( true, false, false );
     load_shaders( gpu, "earth", shaders );
     load_texture( gpu, "earth_day", earth_day_sv );
@@ -26,6 +27,7 @@ void ConguessEarth::update()
 
     gpu.bind_target_depth_views( { conguess.render_target_view.get(), conguess.info_target_view.get() },
         gpu.back_depth_view() );
+    gpu.bind_raster_state( raster_state );
     gpu.bind_depth_state( depth_state );
 
     gpu.bind_shader_view_for_pixel_shader( earth_day_sv, 0 );
@@ -49,7 +51,7 @@ void ConguessEarth::update()
         int MOUSE_COUNTRY;
     } cb = {};
 
-    cb.W = kl::Float4x4::rotation( conguess.sphere_rotation );
+    cb.W = kl::Float4x4::rotation( { 0.0f, -conguess.rotations.y, 0.0f } );
     cb.VP = conguess.camera.matrix();
     cb.SUN_DIRECTION = kl::normalize( conguess.sun_direction );
     cb.ELAPSED_TIME = conguess.timer.elapsed() / 1800.0f;
