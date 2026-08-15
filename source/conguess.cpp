@@ -12,10 +12,7 @@ Conguess::Conguess()
             this->resize( size );
         } );
     window.resize( { 1920, 1080 } );
-
-    gpu.bind_sampler_state_for_pixel_shader( gpu.create_sampler_state( true, false ), 0 );
     camera.position = camera.forward() * -2.0f;
-
     log( "Done." );
 }
 

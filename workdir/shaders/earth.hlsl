@@ -4,7 +4,7 @@ float3 SUN_DIRECTION;
 float ELAPSED_TIME;
 float3 CAMERA_POSITION;
 float RENDER_CLOUDS;
-float MOUSE_COUNTRY;
+int MOUSE_COUNTRY;
 
 Texture2D EARTH_DAY_TEXTURE : register(t0);
 Texture2D EARTH_NIGHT_TEXTURE : register(t1);
@@ -14,7 +14,8 @@ Texture2D EARTH_ROUGHNESS_TEXTURE : register(t4);
 Texture2D EARTH_BOUNDARIES_TEXTURE : register(t5);
 Texture2D EARTH_INDICES_TEXTURE : register(t6);
 
-SamplerState TEXTURE_SAMPLER : register(s0);
+SamplerState LINEAR_SAMPLER : register(s0);
+SamplerState DIRECT_SAMPLER : register(s1);
 
 struct VData
 {
@@ -49,34 +50,13 @@ float3 get_frag_normal(float3 frag_position, float3 frag_normal, float2 frag_tex
     const float3 t = normalize(q1 * st2.x - q2 * st1.x);
     const float3 b = normalize(-q1 * st2.y + q2 * st1.y);
     const float3x3 tbn = float3x3(t, b, frag_normal);
-    const float3 new_normal = normalize(EARTH_NORMAL_TEXTURE.Sample(TEXTURE_SAMPLER, frag_texture).xyz * 2.0f - 1.0f);
+    const float3 new_normal = normalize(EARTH_NORMAL_TEXTURE.Sample(LINEAR_SAMPLER, frag_texture).xyz * 2.0f - 1.0f);
     return normalize(mul(new_normal, tbn));
 }
 
 float get_frag_roughness(float2 frag_texture)
 {
-    return EARTH_ROUGHNESS_TEXTURE.Sample(TEXTURE_SAMPLER, frag_texture).x;
-}
-
-int from4_values(float value)
-{
-    if (value < 0.2f) 
-        return 0;
-    if (value < 0.5f) 
-        return 1;
-    if (value < 0.8f) 
-        return 2;
-    return 3;
-}
-
-int from4_values(float4 data)
-{
-    static const int powers[4] = { 64, 16, 4, 1 };
-    int value = 0;
-    for (int i = 0; i < 4; i++) {
-        value += from4_values(data[i]) * powers[i];
-    }
-    return value;
+    return EARTH_ROUGHNESS_TEXTURE.Sample(LINEAR_SAMPLER, frag_texture).x;
 }
 
 PData p_shader(VData data)
@@ -97,16 +77,16 @@ PData p_shader(VData data)
 
     const float4 full_light = float4(diffuse_component + specular_component + ambient_color, 1.0f);
     
-    const float4 day_color = EARTH_DAY_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
-    const float4 night_color = EARTH_NIGHT_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
+    const float4 day_color = EARTH_DAY_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
+    const float4 night_color = EARTH_NIGHT_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
     
     const float2 new_cloud_coords = float2(data.uv.x - ELAPSED_TIME, data.uv.y);
-    const float4 cloud_color = EARTH_CLOUDS_TEXTURE.Sample(TEXTURE_SAMPLER, new_cloud_coords);
+    const float4 cloud_color = EARTH_CLOUDS_TEXTURE.Sample(LINEAR_SAMPLER, new_cloud_coords);
     
-    const float4 bounds_color = EARTH_BOUNDARIES_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
+    const float4 bounds_color = EARTH_BOUNDARIES_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
     
-    const float4 index_color = EARTH_INDICES_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
-    const float in_mouse_country = (from4_values(index_color) == int(MOUSE_COUNTRY)) ? 1.0f : 0.0f;
+    const int country_index = asint(EARTH_INDICES_TEXTURE.Sample(DIRECT_SAMPLER, data.uv).r);
+    const float in_mouse_country = country_index == MOUSE_COUNTRY;
     
     float4 final_color = day_color * full_light;
     final_color = lerp(night_color, final_color, diffuse_factor);

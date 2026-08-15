@@ -6,10 +6,10 @@ ConguessPostprocess::ConguessPostprocess( Conguess& conguess )
 {
     auto& gpu = conguess.gpu;
 
-    depth_state = gpu.create_depth_state( false, false, false );
-
-    load_shaders( gpu, "postprocess", shaders );
     mesh = gpu.create_screen_mesh();
+    depth_state = gpu.create_depth_state( false, false, false );
+    load_shaders( gpu, "postprocess", shaders );
+    sampler = gpu.create_sampler_state( true, false );
 }
 
 void ConguessPostprocess::update()
@@ -21,6 +21,7 @@ void ConguessPostprocess::update()
 
     gpu.bind_shader_view_for_pixel_shader( conguess.render_shader_view, 0 );
     gpu.bind_shader_view_for_pixel_shader( conguess.info_shader_view, 1 );
+    gpu.bind_sampler_state_for_pixel_shader( sampler, 0 );
 
     struct alignas( 16 ) CB
     {

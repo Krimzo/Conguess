@@ -7,9 +7,10 @@ struct ConguessPostprocess
 {
     Conguess& conguess;
 
+    kl::dx::Buffer mesh;
     kl::dx::DepthState depth_state;
     kl::Shaders shaders;
-    kl::dx::Buffer mesh;
+    kl::dx::SamplerState sampler;
 
     bool render_bounds = false;
 

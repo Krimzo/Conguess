@@ -25,10 +25,17 @@ void generate_indices_map( std::vector<Country> const& countries, std::string_vi
 ConguessCountryData::ConguessCountryData( Conguess& conguess )
     : conguess( conguess )
 {
+    static constexpr int MAX_COUNTRY_COUNT = 255;
     static constexpr std::string_view BOUNDARIES_MAP_OUT_PATH = "textures/earth_boundaries.png";
     static constexpr std::string_view INDICES_MAP_OUT_PATH = "textures/earth_indices.png";
 
     read_country_data( "data/countries.json", countries );
+    const size_t country_count = conguess.country_data.countries.size();
+    if ( country_count > MAX_COUNTRY_COUNT )
+    {
+        log_error( "Error. Max country count is ", MAX_COUNTRY_COUNT, " but ", country_count, " were provided." );
+        return;
+    }
 
     if ( !std::filesystem::exists( BOUNDARIES_MAP_OUT_PATH ) )
         generate_boundary_map( countries, BOUNDARIES_MAP_OUT_PATH );
@@ -212,10 +219,9 @@ void generate_indices_map( std::vector<Country> const& countries, std::string_vi
 {
     kl::Image image;
     image.resize( { 8192, 4096 } );
-    image.fill( kl::RGB{ 0, 0, 0, 0 } );
     const auto draw_country_indices = [&]( std::vector<tPolygon> const& polygons, int index )
         {
-            const kl::RGB index_color = int_to4_value_color( index );
+            const kl::RGB index_color = { (byte) index, 0, 0 };
             for ( auto const& polygon : polygons )
             {
                 const kl::Float4 square_bounds = min_max_coords( polygon );
@@ -225,16 +231,15 @@ void generate_indices_map( std::vector<Country> const& countries, std::string_vi
                 {
                     for ( point.x = top_left.x; point.x <= bottom_right.x; point.x++ )
                     {
-                        if ( polygon.contains( point_to_coords( image.size(), point ) ) )
+                        if ( image.in_bounds( point ) && polygon.contains( point_to_coords( image.size(), point ) ) )
                             image[point] = index_color;
                     }
                 }
             }
         };
-
     std::atomic<int> map_counter = 0;
     const int countries_count = (int) countries.size();
-    kl::sync_for( 0, countries_count, [&]( int i )
+    kl::async_for( 0, countries_count, [&]( int i )
         {
             draw_country_indices( countries[i].polygons, int( i + 1 ) );
             log( "Generated index map ", ++map_counter, "/", countries_count, " (", countries[i].name, ")" );

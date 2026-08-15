@@ -7,10 +7,9 @@ struct ConguessEarth
 {
     Conguess& conguess;
 
-    kl::dx::DepthState depth_state;
     kl::dx::Buffer mesh;
+    kl::dx::DepthState depth_state;
     kl::Shaders shaders;
-
     kl::dx::ShaderView earth_day_sv;
     kl::dx::ShaderView earth_night_sv;
     kl::dx::ShaderView earth_clouds_sv;
@@ -18,6 +17,8 @@ struct ConguessEarth
     kl::dx::ShaderView earth_roughness_sv;
     kl::dx::ShaderView earth_boundaries_sv;
     kl::dx::ShaderView earth_indices_sv;
+    kl::dx::SamplerState linear_sampler;
+    kl::dx::SamplerState direct_sampler;
 
     bool render_clouds = true;
 

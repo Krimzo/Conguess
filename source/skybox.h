@@ -7,9 +7,10 @@ struct ConguessSkybox
 {
     Conguess& conguess;
 
-    kl::dx::Buffer mesh{};
-    kl::dx::ShaderView texture{};
-    kl::Shaders shaders{};
+    kl::dx::Buffer mesh;
+    kl::Shaders shaders;
+    kl::dx::ShaderView texture;
+    kl::dx::SamplerState sampler;
 
     ConguessSkybox( Conguess& conguess );
 

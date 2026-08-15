@@ -6,10 +6,9 @@ ConguessEarth::ConguessEarth( Conguess& conguess )
 {
     auto& gpu = conguess.gpu;
 
-    depth_state = gpu.create_depth_state( true, false, false );
-
-    load_shaders( gpu, "earth", shaders );
     mesh = gpu.create_sphere_mesh( 1.0f, 4, true );
+    depth_state = gpu.create_depth_state( true, false, false );
+    load_shaders( gpu, "earth", shaders );
     load_texture( gpu, "earth_day", earth_day_sv );
     load_texture( gpu, "earth_night", earth_night_sv );
     load_texture( gpu, "earth_clouds", earth_clouds_sv );
@@ -17,6 +16,8 @@ ConguessEarth::ConguessEarth( Conguess& conguess )
     load_texture( gpu, "earth_roughness", earth_roughness_sv );
     load_texture( gpu, "earth_boundaries", earth_boundaries_sv );
     load_texture( gpu, "earth_indices", earth_indices_sv );
+    linear_sampler = gpu.create_sampler_state( true, false );
+    direct_sampler = gpu.create_sampler_state( false, false );
 }
 
 void ConguessEarth::update()
@@ -34,6 +35,8 @@ void ConguessEarth::update()
     gpu.bind_shader_view_for_pixel_shader( earth_roughness_sv, 4 );
     gpu.bind_shader_view_for_pixel_shader( earth_boundaries_sv, 5 );
     gpu.bind_shader_view_for_pixel_shader( earth_indices_sv, 6 );
+    gpu.bind_sampler_state_for_pixel_shader( linear_sampler, 0 );
+    gpu.bind_sampler_state_for_pixel_shader( direct_sampler, 1 );
 
     struct alignas( 16 ) CB
     {
@@ -43,7 +46,7 @@ void ConguessEarth::update()
         float ELAPSED_TIME;
         kl::Float3 CAMERA_POSITION;
         float RENDER_CLOUDS;
-        float MOUSE_COUNTRY;
+        int MOUSE_COUNTRY;
     } cb = {};
 
     cb.W = kl::Float4x4::rotation( conguess.sphere_rotation );
@@ -52,7 +55,7 @@ void ConguessEarth::update()
     cb.ELAPSED_TIME = conguess.timer.elapsed() / 1800.0f;
     cb.CAMERA_POSITION = conguess.camera.position;
     cb.RENDER_CLOUDS = render_clouds;
-    cb.MOUSE_COUNTRY = float( conguess.input.mouse_country_index + 1 );
+    cb.MOUSE_COUNTRY = conguess.input.mouse_country_index + 1;
 
     shaders.upload( cb );
     gpu.bind_shaders( shaders );
