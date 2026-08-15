@@ -1,8 +1,10 @@
 float4x4 W;
 float4x4 VP;
-float4 SUN_DIRECTION;
-float4 CAMERA_POSITION;
-float4 MISC_DATA;
+float3 SUN_DIRECTION;
+float ELAPSED_TIME;
+float3 CAMERA_POSITION;
+float RENDER_CLOUDS;
+float MOUSE_COUNTRY;
 
 Texture2D EARTH_DAY_TEXTURE : register(t0);
 Texture2D EARTH_NIGHT_TEXTURE : register(t1);
@@ -25,7 +27,7 @@ struct VData
 struct PData
 {
     float4 color : SV_Target0;
-    float4 index : SV_Target1;
+    float4 info : SV_Target1;
 };
 
 VData v_shader(float3 position : KL_Position, float3 normal : KL_Normal, float2 uv : KL_UV)
@@ -84,12 +86,12 @@ PData p_shader(VData data)
     const float ambient_factor = 0.05f;
     const float3 ambient_color = ambient_factor;
 
-    const float diffuse_factor = max(dot(-SUN_DIRECTION.xyz, data.normal), 0.0f);
+    const float diffuse_factor = max(dot(-SUN_DIRECTION, data.normal), 0.0f);
     const float3 diffuse_component = { diffuse_factor, diffuse_factor, diffuse_factor };
     
     const float specular_strength = 1.0f - get_frag_roughness(data.uv);
-    const float3 view_direction = normalize(CAMERA_POSITION.xyz - data.world_position);
-    const float3 reflection_direction = reflect(SUN_DIRECTION.xyz, data.normal);
+    const float3 view_direction = normalize(CAMERA_POSITION - data.world_position);
+    const float3 reflection_direction = reflect(SUN_DIRECTION, data.normal);
     const float specular_factor = pow(max(dot(view_direction, reflection_direction), 0.0f), 16.0f);
     const float3 specular_component = specular_strength * specular_factor;
 
@@ -98,22 +100,22 @@ PData p_shader(VData data)
     const float4 day_color = EARTH_DAY_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
     const float4 night_color = EARTH_NIGHT_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
     
-    const float2 new_cloud_coords = float2(data.uv.x - MISC_DATA.x, data.uv.y);
+    const float2 new_cloud_coords = float2(data.uv.x - ELAPSED_TIME, data.uv.y);
     const float4 cloud_color = EARTH_CLOUDS_TEXTURE.Sample(TEXTURE_SAMPLER, new_cloud_coords);
     
     const float4 bounds_color = EARTH_BOUNDARIES_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
     
     const float4 index_color = EARTH_INDICES_TEXTURE.Sample(TEXTURE_SAMPLER, data.uv);
-    const float in_mouse_country = (from4_values(index_color) == int(MISC_DATA.y)) ? 1.0f : 0.0f;
+    const float in_mouse_country = (from4_values(index_color) == int(MOUSE_COUNTRY)) ? 1.0f : 0.0f;
     
     float4 final_color = day_color * full_light;
     final_color = lerp(night_color, final_color, diffuse_factor);
-    final_color = lerp(final_color, cloud_color, MISC_DATA.z ? cloud_color.r : 0.0f);
+    final_color = lerp(final_color, cloud_color, RENDER_CLOUDS ? cloud_color.r : 0.0f);
     
-    const float4 final_index = { 1.0f, bounds_color.r, in_mouse_country, 0.0f };
+    const float4 final_info = { 1.0f, bounds_color.r, in_mouse_country, 0.0f };
     
     PData out_data;
     out_data.color = final_color;
-    out_data.index = final_index;
+    out_data.info = final_info;
     return out_data;
 }

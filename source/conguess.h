@@ -16,8 +16,8 @@ struct Conguess
 
     kl::dx::TargetView render_target_view;
     kl::dx::ShaderView render_shader_view;
-    kl::dx::TargetView index_target_view;
-    kl::dx::ShaderView index_shader_view;
+    kl::dx::TargetView info_target_view;
+    kl::dx::ShaderView info_shader_view;
 
     kl::Float3 sphere_rotation{};
     kl::Float3 sun_direction = kl::normalize( kl::Float3{ 1.0f, -1.0f, 1.0f } );

@@ -20,19 +20,16 @@ void ConguessPostprocess::update()
     gpu.bind_depth_state( depth_state );
 
     gpu.bind_shader_view_for_pixel_shader( conguess.render_shader_view, 0 );
-    gpu.bind_shader_view_for_pixel_shader( conguess.index_shader_view, 1 );
+    gpu.bind_shader_view_for_pixel_shader( conguess.info_shader_view, 1 );
 
     struct alignas( 16 ) CB
     {
-        kl::Float4 misc_data{};
+        float RENDER_BOUNDS;
+        float MOUSE_LMB;
     } cb = {};
 
-    cb.misc_data = {
-        (float) render_bounds,
-        (float) conguess.window.mouse.left,
-        0.0f,
-        0.0f
-    };
+    cb.RENDER_BOUNDS = render_bounds;
+    cb.MOUSE_LMB = conguess.window.mouse.left;
 
     shaders.upload( cb );
     gpu.bind_shaders( shaders );

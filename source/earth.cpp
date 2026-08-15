@@ -23,7 +23,7 @@ void ConguessEarth::update()
 {
     auto& gpu = conguess.gpu;
 
-    gpu.bind_target_depth_views( { conguess.render_target_view.get(), conguess.index_target_view.get() },
+    gpu.bind_target_depth_views( { conguess.render_target_view.get(), conguess.info_target_view.get() },
         gpu.back_depth_view() );
     gpu.bind_depth_state( depth_state );
 
@@ -39,21 +39,20 @@ void ConguessEarth::update()
     {
         kl::Float4x4 W;
         kl::Float4x4 VP;
-        kl::Float4 SUN_DIRECTION;
-        kl::Float4 CAMERA_POSITION;
-        kl::Float4 MISC_DATA;
+        kl::Float3 SUN_DIRECTION;
+        float ELAPSED_TIME;
+        kl::Float3 CAMERA_POSITION;
+        float RENDER_CLOUDS;
+        float MOUSE_COUNTRY;
     } cb = {};
 
     cb.W = kl::Float4x4::rotation( conguess.sphere_rotation );
     cb.VP = conguess.camera.matrix();
-    cb.SUN_DIRECTION.xyz() = kl::normalize( conguess.sun_direction );
-    cb.CAMERA_POSITION.xyz() = conguess.camera.position;
-    cb.MISC_DATA = {
-        conguess.timer.elapsed() / 1800.0f,
-        float( conguess.input.mouse_country_index + 1 ),
-        (float) render_clouds,
-        0.0f
-    };
+    cb.SUN_DIRECTION = kl::normalize( conguess.sun_direction );
+    cb.ELAPSED_TIME = conguess.timer.elapsed() / 1800.0f;
+    cb.CAMERA_POSITION = conguess.camera.position;
+    cb.RENDER_CLOUDS = render_clouds;
+    cb.MOUSE_COUNTRY = float( conguess.input.mouse_country_index + 1 );
 
     shaders.upload( cb );
     gpu.bind_shaders( shaders );

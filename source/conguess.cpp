@@ -24,7 +24,7 @@ bool Conguess::update()
     timer.update();
     input.update();
     gpu.clear_target_view( render_target_view );
-    gpu.clear_target_view( index_target_view );
+    gpu.clear_target_view( info_target_view );
     gpu.clear_internal();
     skybox.update();
     earth.update();
@@ -54,6 +54,6 @@ void Conguess::resize( kl::Int2 size )
     render_shader_view = gpu.create_shader_view( render_texture, {} );
 
     kl::dx::Texture index_texture = gpu.create_texture( &render_texture_desc, {} );
-    index_target_view = gpu.create_target_view( index_texture, {} );
-    index_shader_view = gpu.create_shader_view( index_texture, {} );
+    info_target_view = gpu.create_target_view( index_texture, {} );
+    info_shader_view = gpu.create_shader_view( index_texture, {} );
 }
