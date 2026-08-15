@@ -28,7 +28,7 @@ ConguessCountryData::ConguessCountryData( Conguess& conguess )
     static constexpr std::string_view BOUNDARIES_MAP_OUT_PATH = "textures/earth_boundaries.png";
     static constexpr std::string_view INDICES_MAP_OUT_PATH = "textures/earth_indices.png";
 
-    read_country_data( "data/countries.txt", countries );
+    read_country_data( "data/countries.json", countries );
 
     if ( !std::filesystem::exists( BOUNDARIES_MAP_OUT_PATH ) )
         generate_boundary_map( countries, BOUNDARIES_MAP_OUT_PATH );
@@ -94,61 +94,87 @@ kl::RGB int_to4_value_color( int value )
 void read_country_data( std::string_view const& path, std::vector<Country>& out_countries )
 {
     log( "Reading country data from ", path );
-    std::ifstream file{ path.data() };
-    if ( !file.is_open() )
+    const std::string file_data = kl::read_file_string( path );
+    if ( file_data.empty() )
     {
         log_error( "Failed to open country data file ", path );
         return;
     }
 
-    std::stringstream ss{};
-    Country country{};
-    tPolygon country_polygon{};
-    kl::Float2 polygon_coord{};
+    kl::json::Object top_object{ file_data };
 
-    for ( std::string line; std::getline( file, line );)
+    kl::Ref<kl::json::Array> features = top_object["features"].as<kl::json::Array>();
+    if ( !features )
     {
-        for ( const char c : line )
-        {
-            bool reading_name = true;
-            switch ( c )
+        log_error( "Failed to load features form json file ", path );
+        return;
+    }
+
+    for ( auto& feature : *features )
+    {
+        auto feature_object = feature.as<kl::json::Object>();
+        if ( !feature_object )
+            continue;
+
+        auto properties_object = ( *feature_object )["properties"].as<kl::json::Object>();
+        if ( !properties_object )
+            continue;
+
+        auto admin_literal = ( *properties_object )["ADMIN"].as<kl::json::Literal>();
+        if ( !admin_literal )
+            continue;
+
+        auto opt_str = admin_literal->get_string();
+        if ( !opt_str )
+            continue;
+
+        auto geometry_object = ( *feature_object )["geometry"].as<kl::json::Object>();
+        if ( !geometry_object )
+            continue;
+
+        auto geometry_type_object = ( *geometry_object )["type"].as<kl::json::Literal>();
+        if ( !geometry_type_object )
+            continue;
+
+        auto geometry_type_opt_str = geometry_type_object->get_string();
+        if ( !geometry_type_opt_str )
+            continue;
+
+        auto coordinates_array = ( *geometry_object )["coordinates"].as<kl::json::Array>();
+        if ( !coordinates_array )
+            continue;
+
+        Country& country = out_countries.emplace_back();
+        country.name = *opt_str;
+        const auto save_polygon = [&]( kl::Ref<kl::json::Container> const& array_cont )
             {
-            case '{':
-                reading_name = false;
-                country.name = ss.str();
-                ss = {};
-                break;
-            case '}':
-                reading_name = true;
-                out_countries.push_back( country );
-                country = {};
-                ss = {};
-                break;
-
-            case '[':
-                country_polygon = {};
-                break;
-            case ']':
-                country.polygons.push_back( country_polygon );
-                break;
-
-            case '(':
-                polygon_coord = {};
-                ss = {};
-                break;
-            case ',':
-                polygon_coord.x = std::stof( ss.str() );
-                ss = {};
-                break;
-            case ')':
-                polygon_coord.y = std::stof( ss.str() );
-                country_polygon.coords.push_back( polygon_coord );
-                break;
-
-            default:
-                ss << c;
-                break;
+                auto array = array_cont.as<kl::json::Array>();
+                if ( !array )
+                    return;
+                auto& country_polygon = country.polygons.emplace_back();
+                for ( auto& coord_cont : *array )
+                {
+                    auto coord_cont_array = coord_cont.as<kl::json::Array>();
+                    if ( !coord_cont_array )
+                        continue;
+                    country_polygon.coords.emplace_back(
+                        ( *coord_cont_array )[1]->get_float().value_or( {} ),
+                        ( *coord_cont_array )[0]->get_float().value_or( {} )
+                    );
+                }
+            };
+        for ( auto& polygon : *coordinates_array )
+        {
+            auto polygon_array = polygon.as<kl::json::Array>();
+            if ( !polygon_array )
+                continue;
+            if ( *geometry_type_opt_str == "MultiPolygon" )
+            {
+                for ( auto& sub_polygon : *polygon_array )
+                    save_polygon( sub_polygon );
             }
+            else
+                save_polygon( polygon_array );
         }
     }
     log_success( "Read ", out_countries.size(), " from ", path );
