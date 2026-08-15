@@ -1,7 +1,40 @@
 #include "conguess.h"
 
 
-static void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::ShaderView& out_sv )
+void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::ShaderView& out_sv );
+
+ConguessSkybox::ConguessSkybox( Conguess& conguess )
+    : conguess( conguess )
+{
+    auto& gpu = conguess.gpu;
+
+    load_shaders( gpu, "skybox", shaders );
+    load_mesh( gpu, "cube", mesh );
+    load_box_texture( gpu, "textures/stars_milky.jpg", texture );
+}
+
+void ConguessSkybox::update()
+{
+    auto& gpu = conguess.gpu;
+
+    gpu.bind_target_depth_view( conguess.render_target_view, {} );
+
+    gpu.bind_shader_view_for_pixel_shader( texture, 0 );
+
+    struct alignas( 16 ) CB
+    {
+        kl::Float4x4 VP;
+    } cb = {};
+
+    cb.VP = conguess.camera.matrix();
+
+    shaders.upload( cb );
+    gpu.bind_shaders( shaders );
+
+    gpu.draw( mesh );
+}
+
+void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::ShaderView& out_sv )
 {
     log( "Loading cube image ", path );
     const kl::Image image{ path };
@@ -46,38 +79,4 @@ static void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx
         return;
     }
     log( kl::colors::GREEN, "Cube texture ", path, " is good.", kl::colors::CONSOLE );
-}
-
-ConguessSkybox::ConguessSkybox( Conguess& conguess )
-    : conguess( conguess )
-{
-    auto& gpu = conguess.gpu;
-
-    depth_state = gpu.create_depth_state( false, false, false );
-
-    load_shaders( gpu, "skybox", shaders );
-    load_mesh( gpu, "cube", mesh );
-    load_box_texture( gpu, "textures/stars_milky.jpg", texture );
-}
-
-void ConguessSkybox::update()
-{
-    auto& gpu = conguess.gpu;
-
-    gpu.bind_target_depth_view( conguess.render_target_view, {} );
-    gpu.bind_depth_state( depth_state );
-
-    gpu.bind_shader_view_for_pixel_shader( texture, 0 );
-
-    struct alignas( 16 ) CB
-    {
-        kl::Float4x4 VP;
-    } cb = {};
-
-    cb.VP = conguess.camera.matrix();
-
-    shaders.upload( cb );
-    gpu.bind_shaders( shaders );
-
-    gpu.draw( mesh );
 }

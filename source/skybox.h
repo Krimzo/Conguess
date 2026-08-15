@@ -7,7 +7,6 @@ struct ConguessSkybox
 {
     Conguess& conguess;
 
-    kl::dx::DepthState depth_state{};
     kl::dx::Buffer mesh{};
     kl::dx::ShaderView texture{};
     kl::Shaders shaders{};
