@@ -9,7 +9,7 @@ ConguessSkybox::ConguessSkybox( Conguess& conguess )
     auto& gpu = conguess.gpu;
 
     load_shaders( gpu, "skybox", shaders );
-    load_mesh( gpu, "cube", mesh );
+    mesh = gpu.create_cube_mesh( 1.0f );
     load_box_texture( gpu, "textures/stars_milky.jpg", texture );
 }
 

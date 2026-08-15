@@ -9,7 +9,7 @@ ConguessEarth::ConguessEarth( Conguess& conguess )
     depth_state = gpu.create_depth_state( true, false, false );
 
     load_shaders( gpu, "earth", shaders );
-    load_mesh( gpu, "sphere", mesh );
+    mesh = gpu.create_sphere_mesh( 1.0f, 4, true );
     load_texture( gpu, "earth_day", earth_day_sv );
     load_texture( gpu, "earth_night", earth_night_sv );
     load_texture( gpu, "earth_clouds", earth_clouds_sv );
