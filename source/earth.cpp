@@ -15,7 +15,7 @@ ConguessEarth::ConguessEarth( Conguess& conguess )
     load_texture( gpu, "earth_clouds", earth_clouds_sv );
     load_texture( gpu, "earth_normal", earth_normal_sv );
     load_texture( gpu, "earth_roughness", earth_roughness_sv );
-    load_texture( gpu, "earth_boundaries", earth_boundaries_sv );
+    load_texture( gpu, "earth_borders", earth_borders_sv );
     load_texture( gpu, "earth_indices", earth_indices_sv );
     linear_sampler = gpu.create_sampler_state( true, false );
     direct_sampler = gpu.create_sampler_state( false, false );
@@ -35,7 +35,7 @@ void ConguessEarth::update()
     gpu.bind_shader_view_for_pixel_shader( earth_clouds_sv, 2 );
     gpu.bind_shader_view_for_pixel_shader( earth_normal_sv, 3 );
     gpu.bind_shader_view_for_pixel_shader( earth_roughness_sv, 4 );
-    gpu.bind_shader_view_for_pixel_shader( earth_boundaries_sv, 5 );
+    gpu.bind_shader_view_for_pixel_shader( earth_borders_sv, 5 );
     gpu.bind_shader_view_for_pixel_shader( earth_indices_sv, 6 );
     gpu.bind_sampler_state_for_pixel_shader( linear_sampler, 0 );
     gpu.bind_sampler_state_for_pixel_shader( direct_sampler, 1 );

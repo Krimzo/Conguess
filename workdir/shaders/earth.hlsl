@@ -11,7 +11,7 @@ Texture2D EARTH_NIGHT_TEXTURE : register(t1);
 Texture2D EARTH_CLOUDS_TEXTURE : register(t2);
 Texture2D EARTH_NORMAL_TEXTURE : register(t3);
 Texture2D EARTH_ROUGHNESS_TEXTURE : register(t4);
-Texture2D EARTH_BOUNDARIES_TEXTURE : register(t5);
+Texture2D EARTH_BORDERS_TEXTURE : register(t5);
 Texture2D EARTH_INDICES_TEXTURE : register(t6);
 
 SamplerState LINEAR_SAMPLER : register(s0);
@@ -83,7 +83,7 @@ PData p_shader(VData data)
     const float2 new_cloud_coords = float2(data.uv.x - ELAPSED_TIME, data.uv.y);
     const float4 cloud_color = EARTH_CLOUDS_TEXTURE.Sample(LINEAR_SAMPLER, new_cloud_coords);
     
-    const float4 bounds_color = EARTH_BOUNDARIES_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
+    const float4 border_color = EARTH_BORDERS_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
     
     const int country_index = round(EARTH_INDICES_TEXTURE.Sample(DIRECT_SAMPLER, data.uv).r * 255);
     const float in_mouse_country = country_index == MOUSE_COUNTRY;
@@ -92,7 +92,7 @@ PData p_shader(VData data)
     final_color = lerp(night_color, final_color, diffuse_factor);
     final_color = lerp(final_color, cloud_color, RENDER_CLOUDS ? cloud_color.r : 0.0f);
     
-    const float4 final_info = { true, bounds_color.r, in_mouse_country, 0.0f };
+    const float4 final_info = { true, border_color.r, in_mouse_country, 0.0f };
     
     PData out_data;
     out_data.color = final_color;

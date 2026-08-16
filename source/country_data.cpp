@@ -1,6 +1,8 @@
 #include "conguess.h"
 
 
+static constexpr kl::RGB BORDER_COLOR = kl::colors::WHITE;
+
 bool tPolygon::contains( kl::Float2 point ) const
 {
     bool inside = false;
@@ -25,16 +27,17 @@ kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords );
 kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point );
 kl::Float4 min_max_coords( tPolygon const& polygon );
 kl::RGB int_to4_value_color( int value );
+void draw_indices( std::vector<Country> const& countries, kl::Image& out_image );
 void read_country_data( std::string_view const& path, std::vector<Country>& out_countries );
-void generate_boundary_map( std::vector<Country> const& countries, std::string_view const& path );
+void generate_border_map( std::vector<Country> const& countries, std::string_view const& path );
 void generate_indices_map( std::vector<Country> const& countries, std::string_view const& path );
 
 ConguessCountryData::ConguessCountryData( Conguess& conguess )
     : conguess( conguess )
 {
     static constexpr int MAX_COUNTRY_COUNT = 255;
-    static constexpr std::string_view BOUNDARIES_MAP_OUT_PATH = "textures/earth_boundaries.png";
-    static constexpr std::string_view INDICES_MAP_OUT_PATH = "textures/earth_indices.png";
+    static constexpr std::string_view BORDER_MAP_OUT_PATH = "textures/earth_borders.png";
+    static constexpr std::string_view INDEX_MAP_OUT_PATH = "textures/earth_indices.png";
 
     read_country_data( "data/countries.json", countries );
     const size_t country_count = conguess.country_data.countries.size();
@@ -44,15 +47,15 @@ ConguessCountryData::ConguessCountryData( Conguess& conguess )
         return;
     }
 
-    if ( !std::filesystem::exists( BOUNDARIES_MAP_OUT_PATH ) )
-        generate_boundary_map( countries, BOUNDARIES_MAP_OUT_PATH );
+    if ( !std::filesystem::exists( BORDER_MAP_OUT_PATH ) )
+        generate_border_map( countries, BORDER_MAP_OUT_PATH );
     else
-        log( "Boundaries map already exists ", BOUNDARIES_MAP_OUT_PATH );
+        log( "Border map already exists ", BORDER_MAP_OUT_PATH );
 
-    if ( !std::filesystem::exists( INDICES_MAP_OUT_PATH ) )
-        generate_indices_map( countries, INDICES_MAP_OUT_PATH );
+    if ( !std::filesystem::exists( INDEX_MAP_OUT_PATH ) )
+        generate_indices_map( countries, INDEX_MAP_OUT_PATH );
     else
-        log( "Indices map already exists ", INDICES_MAP_OUT_PATH );
+        log( "Index map already exists ", INDEX_MAP_OUT_PATH );
 }
 
 std::string const& ConguessCountryData::get_name( int index ) const
@@ -62,23 +65,27 @@ std::string const& ConguessCountryData::get_name( int index ) const
 
 kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords )
 {
-    kl::Int2 res;
-    res.x = int( ( coords.y + 180.0f ) / 360.0f * image_size.x );
-    res.y = image_size.y - int( ( coords.x + 90.0f ) / 180.0f * image_size.y );
-    return res;
+    return {
+        int( ( coords.y + 180.0f ) / 360.0f * ( image_size.x - 1 ) ),
+        int( image_size.y - 1 - ( coords.x + 90.0f ) / 180.0f * ( image_size.y - 1 ) ),
+    };
 }
 
 kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point )
 {
-    kl::Float2 res;
-    res.x = ( image_size.y - point.y ) / (float) image_size.y * 180.0f - 90.0f;
-    res.y = point.x / (float) image_size.x * 360.0f - 180.0f;
-    return res;
+    return {
+        ( image_size.y - 1 - point.y ) / ( image_size.y - 1.0f ) * 180.0f - 90.0f,
+        point.x / ( image_size.x - 1.0f ) * 360.0f - 180.0f,
+    };
 }
 
 kl::Float4 min_max_coords( tPolygon const& polygon )
 {
-    kl::Float4 res = { -1e3f, 1e3f, 1e3f, -1e3f };
+    kl::Float4 res = {
+        -std::numeric_limits<float>::infinity(),
+        std::numeric_limits<float>::infinity(),
+        std::numeric_limits<float>::infinity(),
+        -std::numeric_limits<float>::infinity() };
     for ( auto const& coord : polygon.coords )
     {
         res.x = std::max( res.x, coord.x );
@@ -103,6 +110,33 @@ kl::RGB int_to4_value_color( int value )
         byte( result[2] * 85 ),
         byte( result[3] * 85 ),
     };
+}
+
+void draw_indices( std::vector<Country> const& countries, kl::Image& out_image )
+{
+    std::atomic<int> map_counter = 0;
+    const int countries_count = (int) countries.size();
+    for ( int i = 0; i < countries_count; i++ )
+    {
+        const kl::RGB index_color = { byte( i + 1 ), 0, 0 };
+        for ( auto const& polygon : countries[i].polygons )
+        {
+            const kl::Float4 square_bounds = min_max_coords( polygon );
+            const kl::Int2 top_left = coords_to_point( out_image.size(), kl::Float2{ square_bounds.x, square_bounds.y } );
+            const kl::Int2 bottom_right = coords_to_point( out_image.size(), kl::Float2{ square_bounds.z, square_bounds.w } );
+            const int width = bottom_right.x - top_left.x + 1;
+            const int height = bottom_right.y - top_left.y + 1;
+            kl::async_for( 0, width * height, [&]( int i )
+                {
+                    const kl::Int2 point = top_left + kl::Int2::from_index( i, width );
+                    if ( out_image[point] == index_color )
+                        return;
+                    if ( polygon.contains( point_to_coords( out_image.size(), point ) ) )
+                        out_image[point] = index_color;
+                } );
+        }
+        log( "Drawn index data ", ++map_counter, "/", countries_count, " (", countries[i].name, ")" );
+    }
 }
 
 void read_country_data( std::string_view const& path, std::vector<Country>& out_countries )
@@ -193,63 +227,42 @@ void read_country_data( std::string_view const& path, std::vector<Country>& out_
     log_success( "Read ", out_countries.size(), " from ", path );
 }
 
-void generate_boundary_map( std::vector<Country> const& countries, std::string_view const& path )
+void generate_border_map( std::vector<Country> const& countries, std::string_view const& path )
 {
     kl::Image image;
     image.resize( { 8192, 4096 } );
-    const auto draw_country_boundaries = [&]( std::vector<tPolygon> const& polygons )
+    draw_indices( countries, image );
+    log( "Filtering border data" );
+    const kl::Image image_copy = image;
+    kl::async_for( 0, image_copy.pixel_count(), [&]( int i )
         {
-            for ( auto const& [coords] : polygons )
+            const kl::Int2 point = kl::Int2::from_index( i, image_copy.width() );
+            const kl::RGB index_color = image_copy[point];
+            if ( index_color == kl::RGB{} )
+                return;
+            for ( kl::Int2 offset{ -1 }; offset.y <= 1; offset.y++ )
             {
-                kl::Float2 last_coord = coords.back();
-                for ( auto const& coord : coords )
+                for ( offset.x = -1; offset.x <= 1; offset.x++ )
                 {
-                    const kl::Int2 start_pos = coords_to_point( image.size(), last_coord );
-                    const kl::Int2 end_pos = coords_to_point( image.size(), coord );
-                    for ( int i = 0; i < 2; i++ )
-                        image.draw_line( start_pos + kl::Int2( i, i ), end_pos + kl::Int2( i, i ), kl::colors::WHITE );
-                    last_coord = coord;
+                    const kl::Int2 offset_point = point + offset;
+                    if ( !image_copy.in_bounds( offset_point ) || image_copy[offset_point] != index_color )
+                    {
+                        image[point] = BORDER_COLOR;
+                        return;
+                    }
                 }
             }
-        };
-    for ( uint64_t i = 0; i < countries.size(); i++ )
-    {
-        draw_country_boundaries( countries[i].polygons );
-        log( "Generated boundary map ", i + 1, "/", countries.size(), " (", countries[i].name, ")" );
-    }
+            image[point] = kl::RGB{};
+        } );
     image.save_to_file( path, kl::ImageType::PNG );
-    log_success( "Generated boundaries map" );
+    log_success( "Generated border map" );
 }
 
 void generate_indices_map( std::vector<Country> const& countries, std::string_view const& path )
 {
     kl::Image image;
     image.resize( { 8192, 4096 } );
-    const auto draw_country_indices = [&]( std::vector<tPolygon> const& polygons, int index )
-        {
-            const kl::RGB index_color = { byte( index + 1 ), 0, 0 };
-            for ( auto const& polygon : polygons )
-            {
-                const kl::Float4 square_bounds = min_max_coords( polygon );
-                const kl::Int2 top_left = coords_to_point( image.size(), kl::Float2{ square_bounds.x, square_bounds.y } );
-                const kl::Int2 bottom_right = coords_to_point( image.size(), kl::Float2{ square_bounds.z, square_bounds.w } );
-                for ( kl::Int2 point = top_left; point.y <= bottom_right.y; point.y++ )
-                {
-                    for ( point.x = top_left.x; point.x <= bottom_right.x; point.x++ )
-                    {
-                        if ( image.in_bounds( point ) && polygon.contains( point_to_coords( image.size(), point ) ) )
-                            image[point] = index_color;
-                    }
-                }
-            }
-        };
-    std::atomic<int> map_counter = 0;
-    const int countries_count = (int) countries.size();
-    kl::async_for( 0, countries_count, [&]( int i )
-        {
-            draw_country_indices( countries[i].polygons, i );
-            log( "Generated index map ", ++map_counter, "/", countries_count, " (", countries[i].name, ")" );
-        } );
+    draw_indices( countries, image );
     image.save_to_file( path, kl::ImageType::PNG );
     log_success( "Generated indices map" );
 }

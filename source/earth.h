@@ -20,7 +20,7 @@ struct ConguessEarth
     kl::dx::ShaderView earth_clouds_sv;
     kl::dx::ShaderView earth_normal_sv;
     kl::dx::ShaderView earth_roughness_sv;
-    kl::dx::ShaderView earth_boundaries_sv;
+    kl::dx::ShaderView earth_borders_sv;
     kl::dx::ShaderView earth_indices_sv;
     kl::dx::SamplerState linear_sampler;
     kl::dx::SamplerState direct_sampler;
