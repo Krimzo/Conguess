@@ -1,7 +1,4 @@
-improve night lights (they are currently shown in bright areas)
-improve border quality
 improve atmosphere (it should glow only in light areas)
-change mouse country hold color depending on current guess
 add imgui support
 add country filter (size etc) (display list with imgui)
 add polygon struct to klibrary

@@ -64,7 +64,7 @@ PData p_shader(VData data)
     data.normal = get_frag_normal(data.world_position, normalize(data.normal), data.uv);
     
     const float ambient_factor = 0.05f;
-    const float3 ambient_color = ambient_factor;
+    const float3 ambient_component = ambient_factor;
 
     const float diffuse_factor = max(dot(-SUN_DIRECTION, data.normal), 0.0f);
     const float3 diffuse_component = { diffuse_factor, diffuse_factor, diffuse_factor };
@@ -75,7 +75,7 @@ PData p_shader(VData data)
     const float specular_factor = pow(max(dot(view_direction, reflection_direction), 0.0f), 16.0f);
     const float3 specular_component = specular_strength * specular_factor;
 
-    const float4 full_light = float4(diffuse_component + specular_component + ambient_color, 1.0f);
+    const float4 full_light = float4(diffuse_component + specular_component + ambient_component, 1.0f);
     
     const float4 day_color = EARTH_DAY_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
     const float4 night_color = EARTH_NIGHT_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
@@ -89,7 +89,7 @@ PData p_shader(VData data)
     const float in_mouse_country = country_index == MOUSE_COUNTRY;
     
     float4 final_color = day_color * full_light;
-    final_color = lerp(night_color, final_color, diffuse_factor);
+    final_color = lerp(night_color, final_color, pow(saturate(diffuse_factor), 0.4f));
     final_color = lerp(final_color, cloud_color, RENDER_CLOUDS ? cloud_color.r : 0.0f);
     
     const float4 final_info = { true, border_color.r, in_mouse_country, 0.0f };
