@@ -89,4 +89,9 @@ void ConguessInput::update()
         conguess.earth.render_clouds = !conguess.earth.render_clouds;
     if ( keyboard.r.pressed() )
         conguess.game.reset();
+
+    if ( mouse.left.pressed() )
+        original_mouse_country = mouse_country_index.value_or( -1 );
+    if ( mouse.left && mouse_country_index != original_mouse_country )
+        conguess.postprocess.hold_country_color_multi = NEUTRAL_HOLD_COLOR;
 }

@@ -3,6 +3,10 @@
 #include "helper.h"
 
 
+inline constexpr kl::Float4 NEUTRAL_HOLD_COLOR = { 2.0f, 2.0f, 2.0f, 1.0f };
+inline constexpr kl::Float4 CORRECT_HOLD_COLOR = { 1.0f, 2.0f, 1.0f, 1.0f };
+inline constexpr kl::Float4 WRONG_HOLD_COLOR = { 2.0f, 1.0f, 1.0f, 1.0f };
+
 struct ConguessEarth
 {
     Conguess& conguess;

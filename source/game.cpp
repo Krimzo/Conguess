@@ -1,9 +1,6 @@
 #include "conguess.h"
 
 
-static constexpr kl::Float4 CORRECT_HOLD_COLOR = { 1.0f, 2.0f, 1.0f, 1.0f };
-static constexpr kl::Float4 WRONG_HOLD_COLOR = { 2.0f, 1.0f, 1.0f, 1.0f };
-
 ConguessGame::ConguessGame( Conguess& conguess )
     :conguess( conguess )
 {}
