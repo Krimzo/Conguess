@@ -11,8 +11,8 @@ Conguess::Conguess()
             camera.update_aspect_ratio( size );
             this->resize( size );
         } );
-    window.resize( kl::SCREEN_SIZE / 2 );
-    log( "Done." );
+    window.resize( kl::Int2{ kl::SCREEN_SIZE.y * 9 / 10 } );
+    window.set_position( kl::SCREEN_SIZE / 2 - window.size() / 2 );
     game.reset();
 }
 

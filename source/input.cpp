@@ -86,6 +86,8 @@ void ConguessInput::update()
         conguess.earth.render_clouds = !conguess.earth.render_clouds;
     if ( keyboard.r.pressed() )
         conguess.game.reset();
+    if ( keyboard.f11.pressed() )
+        conguess.gpu.set_fullscreen( !conguess.gpu.fullscreened() );
 
     if ( mouse.left.pressed() )
     {

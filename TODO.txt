@@ -1,4 +1,4 @@
-improve atmosphere (it should glow only in light areas)
+add toggle for moving camera or earth around y axis
 add imgui support
 add country filter (size etc) (display list with imgui)
 add polygon struct to klibrary
