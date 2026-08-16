@@ -85,14 +85,14 @@ PData p_shader(VData data)
     
     const float4 bounds_color = EARTH_BOUNDARIES_TEXTURE.Sample(LINEAR_SAMPLER, data.uv);
     
-    const int country_index = asint(EARTH_INDICES_TEXTURE.Sample(DIRECT_SAMPLER, data.uv).r);
+    const int country_index = round(EARTH_INDICES_TEXTURE.Sample(DIRECT_SAMPLER, data.uv).r * 255);
     const float in_mouse_country = country_index == MOUSE_COUNTRY;
     
     float4 final_color = day_color * full_light;
     final_color = lerp(night_color, final_color, diffuse_factor);
     final_color = lerp(final_color, cloud_color, RENDER_CLOUDS ? cloud_color.r : 0.0f);
     
-    const float4 final_info = { 1.0f, bounds_color.r, in_mouse_country, 0.0f };
+    const float4 final_info = { true, bounds_color.r, in_mouse_country, 0.0f };
     
     PData out_data;
     out_data.color = final_color;

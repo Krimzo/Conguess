@@ -2,6 +2,7 @@
 
 #include "country_data.h"
 #include "input.h"
+#include "game.h"
 #include "skybox.h"
 #include "earth.h"
 #include "postprocess.h"
@@ -19,14 +20,9 @@ struct Conguess
     kl::dx::TargetView info_target_view;
     kl::dx::ShaderView info_shader_view;
 
-    kl::Float3 sun_direction{ 1.0f, -1.0f, 1.0f };
-    kl::Float2 rotations{ 45.0f, 180.0f }; // x is for camera, y is for sphere
-    float camera_distance = 2.0f;
-    int game_random_country = -1;
-    int player_score = 0;
-
     ConguessCountryData country_data{ *this };
     ConguessInput input{ *this };
+    ConguessGame game{ *this };
     ConguessSkybox skybox{ *this };
     ConguessEarth earth{ *this };
     ConguessPostprocess postprocess{ *this };
@@ -37,5 +33,4 @@ struct Conguess
 
 private:
     void resize( kl::Int2 size );
-    void update_camera();
 };

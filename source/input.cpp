@@ -1,26 +1,6 @@
 #include "conguess.h"
 
 
-//static bool last_intersect = false;
-//static kl::float3 last_direction = {};
-//static const kl::sphere sphere = { {}, 1.0f };
-//
-//static kl::ray get_mouse_ray()
-//{
-//    const auto frame_size = kl::float2( window->size() );
-//    const kl::float2 ndc = {
-//        static_cast<float>( window->mouse.position().x ),
-//        static_cast<float>( frame_size.y - window->mouse.position().y )
-//    };
-//    return { camera, ndc / frame_size * 2.0f - kl::float2( 1.0f, 1.0f ) };
-//}
-//
-//static void save_last_values()
-//{
-//    last_intersect = get_mouse_ray().intersect_sphere( sphere, last_direction );
-//    last_direction = last_direction.normalize();
-//}
-
 ConguessInput::ConguessInput( Conguess& conguess )
     :conguess( conguess )
 {}
@@ -38,12 +18,12 @@ void ConguessInput::update()
     auto& keyboard = window.keyboard;
     auto& camera = conguess.camera;
 
-    conguess.camera_distance -= mouse.scroll() * SCROLL_MULTI;
-    conguess.camera_distance = kl::max( conguess.camera_distance, MIN_CAMERA_DISTANCE );
+    camera_distance -= mouse.scroll() * SCROLL_MULTI;
+    camera_distance = kl::max( camera_distance, MIN_CAMERA_DISTANCE );
 
     if ( mouse.right.pressed() )
     {
-        original_rotations = conguess.rotations;
+        original_rotations = rotations;
         original_mouse_pos = mouse.position();
     }
 
@@ -51,14 +31,14 @@ void ConguessInput::update()
     {
         const kl::Int2 mouse_delta = mouse.position() - original_mouse_pos;
         const kl::Float2 rotation_delta = ANGLE_MULTI * mouse_delta;
-        conguess.rotations = {
+        rotations = {
             original_rotations.x + rotation_delta.y,
             original_rotations.y + rotation_delta.x,
         };
-        conguess.rotations.x = kl::clamp( conguess.rotations.x, -VERTICAL_ANGLE_LIMIT, VERTICAL_ANGLE_LIMIT );
-        if ( conguess.rotations.x == -VERTICAL_ANGLE_LIMIT || conguess.rotations.x == VERTICAL_ANGLE_LIMIT )
+        rotations.x = kl::clamp( rotations.x, -VERTICAL_ANGLE_LIMIT, VERTICAL_ANGLE_LIMIT );
+        if ( rotations.x == -VERTICAL_ANGLE_LIMIT || rotations.x == VERTICAL_ANGLE_LIMIT )
         {
-            original_rotations = conguess.rotations;
+            original_rotations = rotations;
             original_mouse_pos = mouse.position();
         }
     }
@@ -75,11 +55,9 @@ void ConguessInput::update()
         mouse_geo_location.x = kl::angle( mouse_earth_intersect, { mouse_earth_intersect.x, 0.0f, mouse_earth_intersect.z } );
         mouse_geo_location.x *= mouse_earth_intersect.y < 0.0f ? -1.0f : 1.0f;
 
-        const kl::Float3 greenwich = kl::rotate( kl::Float3{ 0.0f, 0.0f, 1.0f }, kl::Float3{ 0.0f, 1.0f, 0.0f }, -conguess.rotations.y );
+        const kl::Float3 greenwich = kl::rotate( kl::Float3{ 0.0f, 0.0f, 1.0f }, kl::Float3{ 0.0f, 1.0f, 0.0f }, -rotations.y );
         mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_intersect.x, mouse_earth_intersect.z }, true );
         mouse_geo_location.y -= 180.0f;
-
-        kl::print( "Greenwich: ", std::fixed, greenwich );
 
         for ( int i = 0; i < (int) conguess.country_data.countries.size(); i++ )
         {
@@ -96,79 +74,19 @@ void ConguessInput::update()
     country_loop_end:;
     }
 
-    kl::print( "Camera Position ", std::fixed, camera.position );
-    kl::print( "Sphere Rotation ", std::fixed, kl::Float3{ 0.0f, -conguess.rotations.y, 0.0f } );
-    kl::print( "Mouse Geo Location: ", std::fixed, mouse_geo_location ? kl::format( *mouse_geo_location ) : "none" );
-    kl::print( "Mouse Country Index: ", std::fixed, mouse_country_index.value_or( -1 ) );
+    constexpr kl::Float3 BACK_VECTOR = { 0.0f, 0.0f, -1.0f };
+    camera.position = kl::rotate( BACK_VECTOR, { 1.0f, 0.0f, 0.0f }, rotations.x ) * camera_distance;
+    camera.set_forward( -camera.position );
 
-    //// Mouse
-    //window->mouse.left.on_press = [&]
-    //    {
-    //        save_last_values();
-    //    };
+    if ( mouse_country_index && mouse.left.pressed() )
+        conguess.game.play_country( *mouse_country_index );
 
-    //window->mouse.left.on_down = [&]
-    //    {
-    //        if ( kl::float3 current_direction; last_intersect && get_mouse_ray().intersect_sphere( sphere, current_direction ) )
-    //        {
-    //            current_direction = current_direction.normalize();
-
-    //            const kl::float2 delta_angles = {
-    //                kl::float2( last_direction.z, last_direction.y ).angle( { current_direction.z, current_direction.y }, true ),
-    //                kl::float2( last_direction.x, last_direction.z ).angle( { current_direction.x, current_direction.z }, true )
-    //            };
-
-    //            sphere_rotation.y -= delta_angles.y;
-
-    //            const float camera_angle_x = kl::math::to_degrees( std::asin( camera.get_forward().y ) );
-    //            const float new_camera_angle_x = kl::math::minmax( camera_angle_x - delta_angles.x, -85.0f, 85.0f );
-    //            const float new_camera_angle_x_rads = kl::math::to_radians( new_camera_angle_x );
-    //            camera.set_forward( { 0.0f, std::sin( new_camera_angle_x_rads ), std::cos( new_camera_angle_x_rads ) } );
-    //            camera.position = camera.get_forward() * -2.0f;
-
-    //            save_last_values();
-    //        }
-    //    };
-
-    //window->mouse.left.on_release = [&]
-    //    {
-    //        if ( mouse_country_index == last_random_country )
-    //        {
-    //            new_random_country();
-    //            player_score++;
-    //        }
-    //        else if ( mouse_country_index >= 0 )
-    //        {
-    //            player_score--;
-    //        }
-    //        log_play_stats();
-    //    };
-
-    //window->mouse.middle.on_press = window->mouse.left.on_press;
-    //window->mouse.right.on_press = window->mouse.left.on_press;
-    //window->mouse.middle.on_down = window->mouse.left.on_down;
-    //window->mouse.right.on_down = window->mouse.left.on_down;
-
-    //// Keyboard
-    //window->keyboard.r.on_press = [&]()
-    //    {
-    //        new_random_country();
-    //        player_score = 0;
-    //        log_play_stats();
-    //    };
-    //window->keyboard.c.on_press = [&]()
-    //    {
-    //        render::render_clouds = !render::render_clouds;
-    //    };
-    //window->keyboard.b.on_press = [&]()
-    //    {
-    //        postprocess::render_bounds = !postprocess::render_bounds;
-    //    };
-}
-
-void ConguessInput::new_random_country()
-{
-    const int old_game_country = conguess.game_random_country;
-    while ( conguess.game_random_country == old_game_country )
-        conguess.game_random_country = kl::random::gen_int( (int) conguess.country_data.countries.size() );
+    if ( keyboard.a.pressed() )
+        conguess.postprocess.render_atmosphere = !conguess.postprocess.render_atmosphere;
+    if ( keyboard.b.pressed() )
+        conguess.postprocess.render_borders = !conguess.postprocess.render_borders;
+    if ( keyboard.c.pressed() )
+        conguess.earth.render_clouds = !conguess.earth.render_clouds;
+    if ( keyboard.r.pressed() )
+        conguess.game.reset();
 }

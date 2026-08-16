@@ -27,11 +27,19 @@ void ConguessPostprocess::update()
 
     struct alignas( 16 ) CB
     {
-        float RENDER_BOUNDS;
+        kl::Float4 HOVER_COUNTRY_COLOR_MULTI;
+        kl::Float4 HOLD_COUNTRY_COLOR_MULTI;
+        kl::Float4 BORDER_COLOR;
+        float RENDER_BORDERS;
+        float RENDER_ATMOSPHERE;
         float MOUSE_LMB;
     } cb = {};
 
-    cb.RENDER_BOUNDS = render_bounds;
+    cb.HOVER_COUNTRY_COLOR_MULTI = hover_country_color_multi;
+    cb.HOLD_COUNTRY_COLOR_MULTI = hold_country_color_multi;
+    cb.BORDER_COLOR = border_color;
+    cb.RENDER_BORDERS = render_borders;
+    cb.RENDER_ATMOSPHERE = render_atmosphere;
     cb.MOUSE_LMB = conguess.window.mouse.left;
 
     shaders.upload( cb );

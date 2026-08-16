@@ -21,6 +21,7 @@ struct ConguessEarth
     kl::dx::SamplerState linear_sampler;
     kl::dx::SamplerState direct_sampler;
 
+    kl::Float3 sun_direction{ 1.0f, -1.0f, 1.0f };
     bool render_clouds = true;
 
     ConguessEarth( Conguess& conguess );

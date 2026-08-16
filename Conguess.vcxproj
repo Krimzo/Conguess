@@ -65,6 +65,7 @@
     <ClCompile Include="klibrary\klibrary\source\window\window.cpp" />
     <ClCompile Include="source\country_data.cpp" />
     <ClCompile Include="source\conguess.cpp" />
+    <ClCompile Include="source\game.cpp" />
     <ClCompile Include="source\helper.cpp" />
     <ClCompile Include="source\input.cpp" />
     <ClCompile Include="source\postprocess.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="klibrary\klibrary\source\window\window.h" />
     <ClInclude Include="source\country_data.h" />
     <ClInclude Include="source\conguess.h" />
+    <ClInclude Include="source\game.h" />
     <ClInclude Include="source\helper.h" />
     <ClInclude Include="source\input.h" />
     <ClInclude Include="source\postprocess.h" />

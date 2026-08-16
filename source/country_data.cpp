@@ -251,5 +251,5 @@ void generate_indices_map( std::vector<Country> const& countries, std::string_vi
             log( "Generated index map ", ++map_counter, "/", countries_count, " (", countries[i].name, ")" );
         } );
     image.save_to_file( path, kl::ImageType::PNG );
-    kl::print( "Generated indices map" );
+    log_success( "Generated indices map" );
 }

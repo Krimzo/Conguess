@@ -12,10 +12,15 @@ void load_shaders( kl::GPU& gpu, std::string_view const& name, kl::Shaders& out_
         return;
     }
     log( "Compiling shaders ", name );
-    out_shaders = gpu.create_shaders( shader_source );
+    std::string out_vs_error, out_ps_error;
+    out_shaders = gpu.create_shaders( shader_source, {}, &out_vs_error, &out_ps_error );
     if ( !out_shaders )
     {
         log_error( "Failed to compile shaders ", name );
+        if ( !out_vs_error.empty() )
+            log_error( "Vertex Shader Error: ", out_vs_error );
+        if ( !out_ps_error.empty() )
+            log_error( "Pixel Shader Error: ", out_ps_error );
         return;
     }
     log_success( "Shaders ", name, " are good." );
