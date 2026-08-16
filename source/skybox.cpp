@@ -28,9 +28,11 @@ void ConguessSkybox::update()
     struct alignas( 16 ) CB
     {
         kl::Float4x4 VP;
+        kl::Float3 SUN_DIRECTION;
     } cb = {};
 
     cb.VP = conguess.camera.matrix();
+    cb.SUN_DIRECTION = kl::normalize( conguess.earth.sun_direction );
 
     shaders.upload( cb );
     gpu.bind_shaders( shaders );

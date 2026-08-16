@@ -1,5 +1,4 @@
-fix skybox sides
-add sun rendering
+fix atmosphere glitches when looking at the sun
 add imgui support
 add country filter (size etc) (display list with imgui)
 add polygon struct to klibrary
