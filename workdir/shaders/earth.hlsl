@@ -72,7 +72,7 @@ PData p_shader(VData data)
     const float in_mouse_country = (country_index == MOUSE_COUNTRY);
     
     const float ndotl = dot(-SUN_DIRECTION, data.normal);
-    const float terminator = smoothstep(-0.25, 0.25, ndotl);
+    const float terminator = smoothstep(-0.2, 0.2, ndotl);
     const float diffuse_factor = saturate(ndotl);
     
     const float specular_strength = 1.0f - get_frag_roughness(data.uv);

@@ -51,7 +51,7 @@ void ConguessEarth::update()
         int MOUSE_COUNTRY;
     } cb = {};
 
-    cb.W = kl::Float4x4::rotation( { 0.0f, -conguess.input.rotations.y, 0.0f } );
+    cb.W = kl::Float4x4::rotation( conguess.input.earth_rotation );
     cb.VP = conguess.camera.matrix();
     cb.SUN_DIRECTION = kl::normalize( sun_direction );
     cb.ELAPSED_TIME = conguess.timer.elapsed() / 1800.0f;

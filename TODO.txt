@@ -1,4 +1,5 @@
-add toggle for moving camera or earth around y axis
+fix skybox sides
+add sun rendering
 add imgui support
 add country filter (size etc) (display list with imgui)
 add polygon struct to klibrary

@@ -7,8 +7,10 @@ struct ConguessInput
 {
     Conguess& conguess;
 
-    kl::Float2 rotations{ 45.0f, 180.0f }; // x is for camera, y is for sphere
+    kl::Float3 earth_rotation{ 0.0f, 180.0f, 0.0f };
+    kl::Float3 camera_rotation{ 45.0f, 0.0f, 0.0f };
     float camera_distance = 1.5f;
+    bool rotate_camera_y = false;
 
     kl::Float2 original_rotations;
     kl::Int2 original_mouse_pos;
