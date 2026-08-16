@@ -63,35 +63,43 @@ void ConguessInput::update()
         }
     }
 
+    mouse_geo_location.reset();
+    mouse_country_index.reset();
+
     kl::Float3 mouse_earth_intersect;
     const kl::Ray mouse_ray{ camera.position, kl::inverse( camera.matrix() ), mouse.ndc_pos() };
-    mouse_ray.intersect_sphere( EARTH_SPHERE, &mouse_earth_intersect );
-
-    mouse_geo_location.x = kl::angle( mouse_earth_intersect, { mouse_earth_intersect.x, 0.0f, mouse_earth_intersect.z } );
-    mouse_geo_location.x *= mouse_earth_intersect.y < 0.0f ? -1.0f : 1.0f;
-
-    const kl::Float3 greenwich = ( kl::Float4x4::rotation( { 0.0f, -conguess.rotations.y, 0.0f } ) * kl::Float4{ 1.0f, 0.0f, 0.0f, 1.0f } ).xyz();
-    mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_intersect.x, mouse_earth_intersect.z }, false );
-    mouse_geo_location.y *= mouse_earth_intersect.x < 0.0f ? -1.0f : 1.0f;
-
-    mouse_country_index = -1;
-    for ( int i = 0; i < (int) conguess.country_data.countries.size(); i++ )
+    if ( mouse_ray.intersect_sphere( EARTH_SPHERE, &mouse_earth_intersect ) )
     {
-        auto const& country = conguess.country_data.countries[i];
-        for ( auto const& polygon : country.polygons )
+        auto& mouse_geo_location = this->mouse_geo_location.emplace();
+
+        mouse_geo_location.x = kl::angle( mouse_earth_intersect, { mouse_earth_intersect.x, 0.0f, mouse_earth_intersect.z } );
+        mouse_geo_location.x *= mouse_earth_intersect.y < 0.0f ? -1.0f : 1.0f;
+
+        const kl::Float3 greenwich = kl::rotate( kl::Float3{ 0.0f, 0.0f, 1.0f }, kl::Float3{ 0.0f, 1.0f, 0.0f }, -conguess.rotations.y );
+        mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_intersect.x, mouse_earth_intersect.z }, true );
+        mouse_geo_location.y -= 180.0f;
+
+        kl::print( "Greenwich: ", std::fixed, greenwich );
+
+        for ( int i = 0; i < (int) conguess.country_data.countries.size(); i++ )
         {
-            if ( polygon.contains( mouse_geo_location ) )
+            auto const& country = conguess.country_data.countries[i];
+            for ( auto const& polygon : country.polygons )
             {
-                mouse_country_index = i + 1;
-                goto country_loop_end;
+                if ( polygon.contains( mouse_geo_location ) )
+                {
+                    mouse_country_index.emplace( i + 1 );
+                    goto country_loop_end;
+                }
             }
         }
+    country_loop_end:;
     }
-country_loop_end:;
 
-    kl::print( std::fixed, "Camera Position ", camera.position );
-    kl::print( std::fixed, "Sphere Rotation ", kl::Float3{ 0.0f, -conguess.rotations.y, 0.0f } );
-    kl::print( std::fixed, mouse_geo_location, " -> ", mouse_country_index );
+    kl::print( "Camera Position ", std::fixed, camera.position );
+    kl::print( "Sphere Rotation ", std::fixed, kl::Float3{ 0.0f, -conguess.rotations.y, 0.0f } );
+    kl::print( "Mouse Geo Location: ", std::fixed, mouse_geo_location ? kl::format( *mouse_geo_location ) : "none" );
+    kl::print( "Mouse Country Index: ", std::fixed, mouse_country_index.value_or( -1 ) );
 
     //// Mouse
     //window->mouse.left.on_press = [&]

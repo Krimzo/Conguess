@@ -7,8 +7,8 @@ struct ConguessInput
 {
     Conguess& conguess;
 
-    kl::Float2 mouse_geo_location{};
-    int mouse_country_index = -1;
+    std::optional<kl::Float2> mouse_geo_location;
+    std::optional<int> mouse_country_index;
 
     kl::Float2 original_rotations;
     kl::Int2 original_mouse_pos;

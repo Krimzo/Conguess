@@ -3,15 +3,22 @@
 
 bool tPolygon::contains( kl::Float2 point ) const
 {
-    bool in = false;
-    for ( uint64_t i = 0, j = coords.size() - 1; i < coords.size(); j = i++ )
+    bool inside = false;
+    const int n = (int) this->coords.size();
+    for ( int i = 0; i < n; i++ )
     {
-        const bool left = ( coords[i].y > point.y ) != ( coords[j].y > point.y );
-        const bool right = point.x < ( coords[j].x - coords[i].x ) * ( point.y - coords[i].y ) / ( coords[j].y - coords[i].y ) + coords[i].x;
-        if ( left && right )
-            in = !in;
+        kl::Float2 const& p1 = coords[i];
+        kl::Float2 const& p2 = coords[size_t( i + 1 ) % n];
+        if ( ( p1.y > point.y ) == ( p2.y > point.y ) )
+            continue;
+
+        const float x_intersect = ( p2.x - p1.x ) * ( point.y - p1.y ) / ( p2.y - p1.y ) + p1.x;
+        if ( x_intersect < point.x )
+            continue;
+
+        inside = !inside;
     }
-    return in;
+    return inside;
 }
 
 kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords );
@@ -166,8 +173,7 @@ void read_country_data( std::string_view const& path, std::vector<Country>& out_
                         continue;
                     country_polygon.coords.emplace_back(
                         ( *coord_cont_array )[1]->get_float().value_or( {} ),
-                        ( *coord_cont_array )[0]->get_float().value_or( {} )
-                    );
+                        ( *coord_cont_array )[0]->get_float().value_or( {} ) );
                 }
             };
         for ( auto& polygon : *coordinates_array )
