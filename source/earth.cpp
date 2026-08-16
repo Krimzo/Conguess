@@ -57,7 +57,7 @@ void ConguessEarth::update()
     cb.ELAPSED_TIME = conguess.timer.elapsed() / 1800.0f;
     cb.CAMERA_POSITION = conguess.camera.position;
     cb.RENDER_CLOUDS = render_clouds;
-    cb.MOUSE_COUNTRY = conguess.input.mouse_country_index + 1;
+    cb.MOUSE_COUNTRY = conguess.input.mouse_country_index;
 
     shaders.upload( cb );
     gpu.bind_shaders( shaders );

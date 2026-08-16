@@ -56,6 +56,11 @@ void ConguessInput::update()
             original_rotations.y + rotation_delta.x,
         };
         conguess.rotations.x = kl::clamp( conguess.rotations.x, -VERTICAL_ANGLE_LIMIT, VERTICAL_ANGLE_LIMIT );
+        if ( conguess.rotations.x == -VERTICAL_ANGLE_LIMIT || conguess.rotations.x == VERTICAL_ANGLE_LIMIT )
+        {
+            original_rotations = conguess.rotations;
+            original_mouse_pos = mouse.position();
+        }
     }
 
     kl::Float3 mouse_earth_intersect;
@@ -69,7 +74,7 @@ void ConguessInput::update()
     mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_intersect.x, mouse_earth_intersect.z }, false );
     mouse_geo_location.y *= mouse_earth_intersect.x < 0.0f ? -1.0f : 1.0f;
 
-    mouse_country_index = -10;
+    mouse_country_index = -1;
     for ( int i = 0; i < (int) conguess.country_data.countries.size(); i++ )
     {
         auto const& country = conguess.country_data.countries[i];
@@ -77,7 +82,7 @@ void ConguessInput::update()
         {
             if ( polygon.contains( mouse_geo_location ) )
             {
-                mouse_country_index = i;
+                mouse_country_index = i + 1;
                 goto country_loop_end;
             }
         }

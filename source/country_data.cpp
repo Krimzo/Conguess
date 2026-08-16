@@ -221,7 +221,7 @@ void generate_indices_map( std::vector<Country> const& countries, std::string_vi
     image.resize( { 8192, 4096 } );
     const auto draw_country_indices = [&]( std::vector<tPolygon> const& polygons, int index )
         {
-            const kl::RGB index_color = { (byte) index, 0, 0 };
+            const kl::RGB index_color = { byte( index + 1 ), 0, 0 };
             for ( auto const& polygon : polygons )
             {
                 const kl::Float4 square_bounds = min_max_coords( polygon );
@@ -241,7 +241,7 @@ void generate_indices_map( std::vector<Country> const& countries, std::string_vi
     const int countries_count = (int) countries.size();
     kl::async_for( 0, countries_count, [&]( int i )
         {
-            draw_country_indices( countries[i].polygons, int( i + 1 ) );
+            draw_country_indices( countries[i].polygons, i );
             log( "Generated index map ", ++map_counter, "/", countries_count, " (", countries[i].name, ")" );
         } );
     image.save_to_file( path, kl::ImageType::PNG );
