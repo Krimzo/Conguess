@@ -78,9 +78,6 @@ void ConguessInput::update()
     camera.position = kl::rotate( BACK_VECTOR, { 1.0f, 0.0f, 0.0f }, rotations.x ) * camera_distance;
     camera.set_forward( -camera.position );
 
-    if ( mouse_country_index && mouse.left.pressed() )
-        conguess.game.play_country( *mouse_country_index );
-
     if ( keyboard.a.pressed() )
         conguess.postprocess.render_atmosphere = !conguess.postprocess.render_atmosphere;
     if ( keyboard.b.pressed() )
@@ -91,7 +88,17 @@ void ConguessInput::update()
         conguess.game.reset();
 
     if ( mouse.left.pressed() )
+    {
         original_mouse_country = mouse_country_index.value_or( -1 );
-    if ( mouse.left && mouse_country_index != original_mouse_country )
-        conguess.postprocess.hold_country_color_multi = NEUTRAL_HOLD_COLOR;
+        original_is_correct = conguess.game.is_correct( original_mouse_country );
+        if ( mouse_country_index )
+            conguess.game.play_country( *mouse_country_index );
+    }
+    if ( mouse.left )
+    {
+        if ( mouse_country_index == original_mouse_country )
+            conguess.postprocess.hold_country_color_multi = original_is_correct ? CORRECT_HOLD_COLOR : WRONG_HOLD_COLOR;
+        else
+            conguess.postprocess.hold_country_color_multi = NEUTRAL_HOLD_COLOR;
+    }
 }

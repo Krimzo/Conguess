@@ -13,6 +13,7 @@ struct ConguessInput
     kl::Float2 original_rotations;
     kl::Int2 original_mouse_pos;
     int original_mouse_country = -1;
+    bool original_is_correct = false;
 
     std::optional<kl::Float2> mouse_geo_location;
     std::optional<int> mouse_country_index;

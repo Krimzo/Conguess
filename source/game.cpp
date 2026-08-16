@@ -9,7 +9,7 @@ void ConguessGame::play_country( int index )
 {
     auto& country_data = conguess.country_data;
     m_play_count += 1;
-    if ( index != m_random_country )
+    if ( !is_correct( index ) )
     {
         conguess.postprocess.hold_country_color_multi = WRONG_HOLD_COLOR;
         log_error( "Incorrect, that was: ", country_data.get_name( index - 1 ) );
@@ -37,6 +37,11 @@ int ConguessGame::play_count() const
 int ConguessGame::player_score() const
 {
     return m_player_score;
+}
+
+bool ConguessGame::is_correct( int index ) const
+{
+    return index == m_random_country;
 }
 
 void ConguessGame::new_random_country()
