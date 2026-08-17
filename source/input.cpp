@@ -94,6 +94,8 @@ void ConguessInput::update()
     }
     if ( keyboard.f11.pressed() )
         conguess.gpu.set_fullscreen( !conguess.gpu.fullscreened() );
+    if ( keyboard.esc.pressed() )
+        conguess.window.close();
 
     if ( mouse.left.pressed() )
     {

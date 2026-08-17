@@ -68,10 +68,12 @@
     <ClCompile Include="source\game.cpp" />
     <ClCompile Include="source\helper.cpp" />
     <ClCompile Include="source\input.cpp" />
+    <ClCompile Include="source\logger.cpp" />
     <ClCompile Include="source\postprocess.cpp" />
     <ClCompile Include="source\earth.cpp" />
     <ClCompile Include="source\skybox.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="klibrary\klibrary\source\apis\apis.h" />
@@ -165,9 +167,12 @@
     <ClInclude Include="source\game.h" />
     <ClInclude Include="source\helper.h" />
     <ClInclude Include="source\input.h" />
+    <ClInclude Include="source\logger.h" />
     <ClInclude Include="source\postprocess.h" />
     <ClInclude Include="source\earth.h" />
     <ClInclude Include="source\skybox.h" />
+    <ClInclude Include="source\t.h" />
+    <ClInclude Include="source\ui.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -1,3 +1,2 @@
 improve mouse rotation so it scales with zoom
-add imgui support
 add polygon struct to klibrary

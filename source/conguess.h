@@ -1,11 +1,13 @@
 #pragma once
 
+#include "logger.h"
 #include "country_data.h"
 #include "input.h"
 #include "game.h"
 #include "skybox.h"
 #include "earth.h"
 #include "postprocess.h"
+#include "ui.h"
 
 
 struct Conguess
@@ -26,6 +28,7 @@ struct Conguess
     ConguessSkybox skybox{ *this };
     ConguessEarth earth{ *this };
     ConguessPostprocess postprocess{ *this };
+    ConguessUI ui{ *this };
 
     Conguess();
 

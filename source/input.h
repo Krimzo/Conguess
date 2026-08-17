@@ -9,7 +9,7 @@ struct ConguessInput
 
     kl::Float3 earth_rotation{ 0.0f, 180.0f, 0.0f };
     kl::Float3 camera_rotation{ 45.0f, 0.0f, 0.0f };
-    float camera_distance = 1.5f;
+    float camera_distance = 2.25f;
     bool rotate_camera_y = false;
 
     kl::Float2 original_rotations;
