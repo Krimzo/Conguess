@@ -17,6 +17,8 @@ struct Country
 {
     std::string name;
     std::vector<tPolygon> polygons;
+
+    double max_poly_area = 0.0;
     double total_area = 0.0;
 
     void compute_area();

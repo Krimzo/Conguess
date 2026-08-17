@@ -52,9 +52,14 @@ double tPolygon::spherical_area( double radius ) const
 void Country::compute_area()
 {
     static constexpr double EARTH_RADIUS = 6371.0;
+    max_poly_area = 0.0;
     total_area = 0.0;
     for ( auto& poly : polygons )
-        total_area += poly.spherical_area( EARTH_RADIUS );
+    {
+        const double poly_area = poly.spherical_area( EARTH_RADIUS );
+        max_poly_area = kl::max( max_poly_area, poly_area );
+        total_area += poly_area;
+    }
 }
 
 kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords );

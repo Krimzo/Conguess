@@ -70,6 +70,6 @@ void ConguessGame::new_random_country()
     {
         m_random_country = kl::random::gen_int( (int) countries.size() ) + 1;
     }
-    while ( m_random_country == old_random_country && countries[(size_t) m_random_country - 1].total_area < min_country_area );
+    while ( m_random_country == old_random_country || countries[(size_t) m_random_country - 1].max_poly_area < min_allowed_poly_area );
     log( "New Random Country Is: ", countries[(size_t) m_random_country - 1].name );
 }

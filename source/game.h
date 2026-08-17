@@ -7,7 +7,7 @@ struct ConguessGame
 {
     Conguess& conguess;
 
-    double min_country_area = 20'000.0;
+    double min_allowed_poly_area = 20'000.0;
     int hightlight_at_fail_count = 3;
 
     ConguessGame( Conguess& conguess );

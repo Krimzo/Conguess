@@ -1,5 +1,4 @@
 fix atmosphere glitches when looking at the sun
-country filtering should be based on largest polygon, not total area
 improve mouse rotation so it scales with zoom
 add imgui support
 add polygon struct to klibrary
