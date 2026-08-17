@@ -50,6 +50,8 @@ void Conguess::resize( kl::Int2 size )
     render_target_view = gpu.create_target_view( render_texture, {} );
     render_shader_view = gpu.create_shader_view( render_texture, {} );
 
+    render_texture_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+
     kl::dx::Texture index_texture = gpu.create_texture( &render_texture_desc, {} );
     info_target_view = gpu.create_target_view( index_texture, {} );
     info_shader_view = gpu.create_shader_view( index_texture, {} );

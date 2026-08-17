@@ -4,7 +4,9 @@ float3 SUN_DIRECTION;
 float ELAPSED_TIME;
 float3 CAMERA_POSITION;
 float RENDER_CLOUDS;
+int CURRENT_RAND_COUNTRY;
 int MOUSE_COUNTRY;
+int HIGHLIGHT_CURRENT;
 
 Texture2D EARTH_DAY_TEXTURE : register(t0);
 Texture2D EARTH_NIGHT_TEXTURE : register(t1);
@@ -59,6 +61,12 @@ float get_frag_roughness(float2 frag_texture)
     return EARTH_ROUGHNESS_TEXTURE.Sample(LINEAR_SAMPLER, frag_texture).x;
 }
 
+float3 grayscale(float3 color)
+{
+    static const float3 LUM = float3(0.299f, 0.587f, 0.114f);
+    return dot(color, LUM);
+}
+
 PData p_shader(VData data)
 {
     data.normal = get_frag_normal(data.world_position, normalize(data.normal), data.uv);
@@ -69,7 +77,9 @@ PData p_shader(VData data)
     const float border_value = EARTH_BORDERS_TEXTURE.Sample(LINEAR_SAMPLER, data.uv).r;
     
     const int country_index = round(EARTH_INDICES_TEXTURE.Sample(DIRECT_SAMPLER, data.uv).r * 255);
-    const float in_mouse_country = (country_index == MOUSE_COUNTRY);
+    float country_highlight_state = (HIGHLIGHT_CURRENT && country_index == CURRENT_RAND_COUNTRY) ? 1.0f : 0.0f;
+    if (country_index == MOUSE_COUNTRY)
+        country_highlight_state = 2.0f;
     
     const float ndotl = dot(-SUN_DIRECTION, data.normal);
     const float terminator = smoothstep(-0.2, 0.2, ndotl);
@@ -82,10 +92,13 @@ PData p_shader(VData data)
     
     const float3 daily_color = lerp(day_color * (diffuse_factor + specular_factor), cloud_value, RENDER_CLOUDS ? cloud_value : 0.0f);
     const float3 nightly_color = night_color * (RENDER_CLOUDS ? (1.0f - cloud_value) : 1.0f);
-    const float3 color = lerp(nightly_color, daily_color, terminator);
-        
+    float3 color = lerp(nightly_color, daily_color, terminator);
+    
+    if (HIGHLIGHT_CURRENT)
+        color = grayscale(color);
+       
     PData out_data;
     out_data.color = float4(color, 1.0f);
-    out_data.info = float4(1.0f, border_value, in_mouse_country, diffuse_factor);
+    out_data.info = float4(1.0f, border_value, country_highlight_state, diffuse_factor);
     return out_data;
 }

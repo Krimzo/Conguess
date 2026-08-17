@@ -1,4 +1,5 @@
 #include "conguess.h"
+#include "game.h"
 
 
 ConguessGame::ConguessGame( Conguess& conguess )
@@ -11,6 +12,7 @@ void ConguessGame::play_country( int index )
     m_play_count += 1;
     if ( !is_correct( index ) )
     {
+        m_fail_count += 1;
         conguess.postprocess.hold_country_color_multi = WRONG_HOLD_COLOR;
         log_error( "Incorrect, that was: ", country_data.get_name( index - 1 ) );
         return;
@@ -29,9 +31,19 @@ void ConguessGame::reset()
     m_player_score = 0;
 }
 
+int ConguessGame::current_rand() const
+{
+    return m_random_country;
+}
+
 int ConguessGame::play_count() const
 {
     return m_play_count;
+}
+
+int ConguessGame::fail_count() const
+{
+    return m_fail_count;
 }
 
 int ConguessGame::player_score() const
@@ -44,8 +56,14 @@ bool ConguessGame::is_correct( int index ) const
     return index == m_random_country;
 }
 
+bool ConguessGame::should_highlight() const
+{
+    return m_fail_count >= hightlight_at_fail_count;
+}
+
 void ConguessGame::new_random_country()
 {
+    m_fail_count = 0;
     auto& countries = conguess.country_data.countries;
     const int old_random_country = m_random_country;
     do

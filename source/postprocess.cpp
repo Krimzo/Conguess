@@ -27,6 +27,7 @@ void ConguessPostprocess::update()
 
     struct alignas( 16 ) CB
     {
+        kl::Float4 HIGHLIGHT_COUNTRY_COLOR_MULTI;
         kl::Float4 HOVER_COUNTRY_COLOR_MULTI;
         kl::Float4 HOLD_COUNTRY_COLOR_MULTI;
         kl::Float4 BORDER_COLOR;
@@ -35,6 +36,7 @@ void ConguessPostprocess::update()
         float MOUSE_LMB;
     } cb = {};
 
+    cb.HIGHLIGHT_COUNTRY_COLOR_MULTI = highlight_country_color_multi;
     cb.HOVER_COUNTRY_COLOR_MULTI = hover_country_color_multi;
     cb.HOLD_COUNTRY_COLOR_MULTI = hold_country_color_multi;
     cb.BORDER_COLOR = border_color;

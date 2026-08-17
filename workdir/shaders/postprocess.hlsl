@@ -1,6 +1,7 @@
 static const int ATMOSHPERE_SEARCH_RADIUS = 6;
 static const float4 ATMOSHPERE_COLOR = { 0.5f, 0.8f, 0.9f, 1.0f };
 
+float4 HIGHLIGHT_COUNTRY_COLOR_MULTI;
 float4 HOVER_COUNTRY_COLOR_MULTI;
 float4 HOLD_COUNTRY_COLOR_MULTI;
 float4 BORDER_COLOR;
@@ -48,6 +49,11 @@ float4 render_borders(float2 screen)
     return BORDER_COLOR;
 }
 
+float4 render_highlight_country(float2 screen)
+{
+    return RENDER_TEXTURE[screen] * HIGHLIGHT_COUNTRY_COLOR_MULTI;
+}
+
 float4 render_mouse_country(float2 screen)
 {
     return RENDER_TEXTURE[screen] * (MOUSE_LMB ? HOLD_COUNTRY_COLOR_MULTI : HOVER_COUNTRY_COLOR_MULTI);
@@ -63,7 +69,10 @@ float4 p_shader(float4 screen : SV_Position) : SV_Target
     if (RENDER_BORDERS && info_data.g)
         return render_borders(screen.xy);
     
-    if (info_data.b)
+    if (info_data.b == 1.0f)
+        return render_highlight_country(screen.xy);
+    
+    if (info_data.b == 2.0f)
         return render_mouse_country(screen.xy);
     
     return RENDER_TEXTURE[screen.xy];
