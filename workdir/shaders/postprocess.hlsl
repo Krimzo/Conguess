@@ -19,7 +19,7 @@ float4 v_shader(float3 position : KL_Position) : SV_Position
 
 float4 render_atmosphere(float2 screen)
 {
-    static const int MAX_SEARCH_COUNT = (ATMOSHPERE_SEARCH_RADIUS * 2 + 1) * (ATMOSHPERE_SEARCH_RADIUS * 2 + 1);
+    static const int MAX_SEARCH_COUNT = (ATMOSHPERE_SEARCH_RADIUS * 2 + 1) * (ATMOSHPERE_SEARCH_RADIUS * 2 + 1) / 2;
     int found_count = 0;
     float diffuse_sum = 0.0f;
     for (int y = -ATMOSHPERE_SEARCH_RADIUS; y <= ATMOSHPERE_SEARCH_RADIUS; y++)
@@ -33,15 +33,9 @@ float4 render_atmosphere(float2 screen)
             diffuse_sum += info.a;
         }
     }
-    if (diffuse_sum > 0.0f)
-    {
-        const float lerp_val = found_count / float(MAX_SEARCH_COUNT);
-        float4 result = lerp(RENDER_TEXTURE[screen], ATMOSHPERE_COLOR, lerp_val);
-        result.xyz *= diffuse_sum / found_count;
-        return result;
-    }
-    else
-        return RENDER_TEXTURE[screen];
+    const float lerp_val = saturate(found_count / (float) MAX_SEARCH_COUNT);
+    const float diffuse_avg = saturate(diffuse_sum / found_count);
+    return lerp(RENDER_TEXTURE[screen], ATMOSHPERE_COLOR, lerp_val * diffuse_avg);
 }
 
 float4 render_borders(float2 screen)

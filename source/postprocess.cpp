@@ -41,7 +41,7 @@ void ConguessPostprocess::update()
     cb.HOLD_COUNTRY_COLOR_MULTI = hold_country_color_multi;
     cb.BORDER_COLOR = border_color;
     cb.RENDER_BORDERS = render_borders;
-    cb.RENDER_ATMOSPHERE = render_atmosphere;
+    cb.RENDER_ATMOSPHERE = conguess.game.should_highlight() ? false : render_atmosphere;
     cb.MOUSE_LMB = conguess.window.mouse.left;
 
     shaders.upload( cb );

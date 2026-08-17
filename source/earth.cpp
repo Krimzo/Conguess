@@ -58,7 +58,7 @@ void ConguessEarth::update()
     cb.SUN_DIRECTION = kl::normalize( sun_direction );
     cb.ELAPSED_TIME = conguess.timer.elapsed() / 1800.0f;
     cb.CAMERA_POSITION = conguess.camera.position;
-    cb.RENDER_CLOUDS = render_clouds;
+    cb.RENDER_CLOUDS = conguess.game.should_highlight() ? false : render_clouds;
     cb.CURRENT_RAND_COUNTRY = conguess.game.current_rand();
     cb.MOUSE_COUNTRY = conguess.input.mouse_country_index.value_or( -1 );
     cb.HIGHLIGHT_CURRENT = conguess.game.should_highlight();
