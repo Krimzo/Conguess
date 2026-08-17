@@ -1,4 +1,3 @@
-fix index map generation, country inside a country (lesotho etc)
 improve mouse rotation so it scales with zoom
 add imgui support
 add polygon struct to klibrary

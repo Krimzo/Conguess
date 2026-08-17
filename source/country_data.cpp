@@ -172,7 +172,7 @@ void draw_indices( std::vector<Country> const& countries, kl::Image& out_image )
             kl::async_for( 0, width * height, [&]( int i )
                 {
                     const kl::Int2 point = top_left + kl::Int2::from_index( i, width );
-                    if ( out_image[point] == index_color )
+                    if ( out_image[point] != kl::RGB{} )
                         return;
                     if ( polygon.contains( point_to_coords( out_image.size(), point ) ) )
                         out_image[point] = index_color;
