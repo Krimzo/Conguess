@@ -7,13 +7,19 @@ struct tPolygon
 {
     std::vector<kl::Float2> coords;
 
-    [[nodiscard]] bool contains( kl::Float2 point ) const;
+    bool contains( kl::Float2 point ) const;
+
+    double area() const;
+    double spherical_area( double radius ) const;
 };
 
 struct Country
 {
     std::string name;
     std::vector<tPolygon> polygons;
+    double total_area = 0.0;
+
+    void compute_area();
 };
 
 struct ConguessCountryData

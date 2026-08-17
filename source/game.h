@@ -7,6 +7,8 @@ struct ConguessGame
 {
     Conguess& conguess;
 
+    double min_country_area = 20'000.0;
+
     ConguessGame( Conguess& conguess );
 
     void play_country( int index );

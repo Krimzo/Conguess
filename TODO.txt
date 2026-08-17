@@ -1,4 +1,4 @@
 fix atmosphere glitches when looking at the sun
+add help (highlight country after few failed attempts)
 add imgui support
-add country filter (size etc) (display list with imgui)
 add polygon struct to klibrary

@@ -23,6 +23,40 @@ bool tPolygon::contains( kl::Float2 point ) const
     return inside;
 }
 
+double tPolygon::area() const
+{
+    double area = 0.0;
+    const size_t n = coords.size();
+    for ( size_t i = 0; i < n; i++ )
+    {
+        auto const& p1 = coords[i];
+        auto const& p2 = coords[( i + 1 ) % n];
+        area += 0.5 * ( p1.x * p2.y - p2.x * p1.y );
+    }
+    return kl::abs( area );
+}
+
+double tPolygon::spherical_area( double radius ) const
+{
+    double sum = 0.0;
+    const size_t n = coords.size();
+    for ( size_t i = 0; i < n; i++ )
+    {
+        const double lon_prev = kl::to_radians<double>() * coords[( i + n - 1 ) % n].y;
+        const double lon_next = kl::to_radians<double>() * coords[( i + 1 ) % n].y;
+        sum += ( lon_next - lon_prev ) * kl::sin_d<double>( coords[i].x );
+    }
+    return kl::abs( sum ) * radius * radius * 0.5;
+}
+
+void Country::compute_area()
+{
+    static constexpr double EARTH_RADIUS = 6371.0;
+    total_area = 0.0;
+    for ( auto& poly : polygons )
+        total_area += poly.spherical_area( EARTH_RADIUS );
+}
+
 kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords );
 kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point );
 kl::Float4 min_max_coords( tPolygon const& polygon );
@@ -40,12 +74,16 @@ ConguessCountryData::ConguessCountryData( Conguess& conguess )
     static constexpr std::string_view INDEX_MAP_OUT_PATH = "textures/earth_indices.png";
 
     read_country_data( "data/countries.json", countries );
-    const size_t country_count = conguess.country_data.countries.size();
+    const size_t country_count = countries.size();
     if ( country_count > MAX_COUNTRY_COUNT )
     {
         log_error( "Error. Max country count is ", MAX_COUNTRY_COUNT, " but ", country_count, " were provided." );
         return;
     }
+
+    log( "Computing country area" );
+    for ( auto& country : countries )
+        country.compute_area();
 
     if ( !std::filesystem::exists( BORDER_MAP_OUT_PATH ) )
         generate_border_map( countries, BORDER_MAP_OUT_PATH );

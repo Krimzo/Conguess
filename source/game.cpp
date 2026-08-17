@@ -46,9 +46,12 @@ bool ConguessGame::is_correct( int index ) const
 
 void ConguessGame::new_random_country()
 {
-    auto& country_data = conguess.country_data;
+    auto& countries = conguess.country_data.countries;
     const int old_random_country = m_random_country;
-    while ( m_random_country == old_random_country )
-        m_random_country = kl::random::gen_int( (int) country_data.countries.size() ) + 1;
-    log( "New Random Country Is: ", country_data.get_name( m_random_country - 1 ) );
+    do
+    {
+        m_random_country = kl::random::gen_int( (int) countries.size() ) + 1;
+    }
+    while ( m_random_country == old_random_country && countries[(size_t) m_random_country - 1].total_area < min_country_area );
+    log( "New Random Country Is: ", countries[(size_t) m_random_country - 1].name );
 }
