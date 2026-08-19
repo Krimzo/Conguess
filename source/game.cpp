@@ -1,105 +1,90 @@
+#include "conguess.h"
 #include "game.h"
 
-#include "input.h"
-#include "render.h"
-#include "skybox.h"
-#include "postprocess.h"
-#include "data.h"
 
+ConguessGame::ConguessGame( Conguess& conguess )
+    :conguess( conguess )
+{}
 
-static constexpr bool debug_times = false;
-static constexpr bool log_to_console = true;
-
-void game::log(const std::string& message)
+void ConguessGame::play_country( int index )
 {
-	if constexpr (log_to_console) {
-		kl::print(message);
-	}
-	else {
-		window->set_title(message);
-	}
+    auto& country_data = conguess.country_data;
+    m_play_count += 1;
+    if ( !is_correct( index ) )
+    {
+        m_fail_count += 1;
+        conguess.postprocess.hold_country_color_multi = WRONG_HOLD_COLOR;
+        log_error( "Incorrect, that was: ", country_data.get_name( index - 1 ) );
+        return;
+    }
+    m_player_score += 1;
+    conguess.postprocess.hold_country_color_multi = CORRECT_HOLD_COLOR;
+    log_success( "Correct, player score: ", m_player_score, " / ", m_play_count );
+    new_random_country();
 }
 
-void game::log_play_stats()
+void ConguessGame::reset()
 {
-	game::log(kl::format(
-		"[", game::player_score, "] ",
-		"(", data::countries[game::last_random_country].name, ")"
-	));
+    m_play_count = 0;
+    m_player_score = 0;
+    gen_possible();
+    log( "Game Reset." );
+    new_random_country();
 }
 
-void game::new_random_country()
+int ConguessGame::current_rand() const
 {
-	int new_random_country = last_random_country;
-	while (new_random_country == last_random_country) {
-		new_random_country = kl::random::get_int(static_cast<int>(data::countries.size()));
-	}
-	last_random_country = new_random_country;
+    return m_random_country;
 }
 
-int main()
+int ConguessGame::play_count() const
 {
-	// Start
-	game::window = kl::make<kl::window>(kl::uint2(1600, 900), "Country Guesser");
-	game::window->on_resize = [&](const kl::uint2 new_size) {
-		if (game::gpu && new_size.x > 0 && new_size.y > 0) {
-			render::resize(new_size);
-			game::gpu->resize_internal(new_size);
-			game::gpu->set_viewport(new_size);
-			game::camera.update_aspect_ratio(new_size);
-		}
-	};
+    return m_play_count;
+}
 
-	game::window->draw_image(kl::image(game::window->size(), kl::colors::gray));
-	game::window->set_icon("resource/textures/icon.ico");
+int ConguessGame::fail_count() const
+{
+    return m_fail_count;
+}
 
-	game::gpu = kl::make<kl::gpu>(game::window->get_window());
-	game::gpu->bind_sampler_state(game::gpu->new_sampler_state(true, false), 0);
+int ConguessGame::player_score() const
+{
+    return m_player_score;
+}
 
-	game::camera.position = game::camera.get_forward() * -2.0f;
+bool ConguessGame::is_correct( int index ) const
+{
+    return index == m_random_country;
+}
 
-	data::initialize();
+bool ConguessGame::should_highlight() const
+{
+    return m_fail_count >= hightlight_at_fail_count;
+}
 
-	input::initialize();
-	skybox::initialize();
-	render::initialize();
-	postprocess::initialize();
+void ConguessGame::gen_possible()
+{
+    auto& country_data = conguess.country_data;
+    m_possible_countries.clear();
+    for ( int i = 0; i < country_data.countries.size(); i++ )
+    {
+        auto& country = country_data.countries[i];
+        if ( country.max_poly_area < min_allowed_poly_area )
+            continue;
+        m_possible_countries.emplace_back( i + 1 );
+    }
+}
 
-	game::window->keyboard.r.on_press();
-
-	// Update
-	kl::timer timer = {};
-	while (game::window->process(false)) {
-		timer.update_interval();
-		
-		kl::time::get_interval();
-		input::update();
-		const float input_time = kl::time::get_interval();
-
-		game::gpu->clear_internal();
-
-		kl::time::get_interval();
-		skybox::update();
-		const float skybox_time = kl::time::get_interval();
-
-		kl::time::get_interval();
-		render::update();
-		const float render_time = kl::time::get_interval();
-
-		kl::time::get_interval();
-		postprocess::update();
-		const float postprocess_time = kl::time::get_interval();
-
-		game::gpu->swap_buffers(true);
-
-		if constexpr (debug_times) {
-			game::log(kl::format(std::fixed, std::setprecision(2),
-				"Input[", input_time * 1000.0f, "] ",
-				"Skybox[", skybox_time * 1000.0f, "] ",
-				"Render[", render_time * 1000.0f, "] ",
-				"Postprocess[", postprocess_time * 1000.0f, "] ",
-				"FPS(", static_cast<int>(1.0f / game::timer.get_interval()), ")"
-			));
-		}
-	}
+void ConguessGame::new_random_country()
+{
+    if ( m_possible_countries.empty() )
+    {
+        this->reset();
+        return;
+    }
+    m_fail_count = 0;
+    const int rand_index = kl::random::gen_int( (int) m_possible_countries.size() );
+    m_random_country = m_possible_countries[rand_index];
+    m_possible_countries.erase( m_possible_countries.begin() + rand_index );
+    log( "New Random Country Is: ", conguess.country_data.countries[(size_t) m_random_country - 1].name );
 }

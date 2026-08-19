@@ -1,52 +1,73 @@
-#include "skybox.h"
-
-#include "render.h"
-#include "game.h"
+#include "conguess.h"
 
 
-static kl::dx::shader_view process_box_image(const kl::image& image)
+void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::ShaderView& out_sv );
+
+ConguessSkybox::ConguessSkybox( Conguess& conguess )
+    : conguess( conguess )
 {
-	if (image.width() % 4 == 0 && image.height() % 3 == 0) {
-		const uint32_t part_width = image.width() / 4;
-		if (const uint32_t part_height = image.height() / 3; part_width == part_height) {
-			const kl::uint2 part_size(part_width, part_height);
-			const kl::image front = image.get_square(part_size * kl::uint2(1, 1), part_size * kl::uint2(2, 2));
-			const kl::image back = image.get_square(part_size * kl::uint2(3, 1), part_size * kl::uint2(4, 2));
-			const kl::image left = image.get_square(part_size * kl::uint2(0, 1), part_size * kl::uint2(1, 2));
-			const kl::image right = image.get_square(part_size * kl::uint2(2, 1), part_size * kl::uint2(3, 2));
-			const kl::image top = image.get_square(part_size * kl::uint2(1, 0), part_size * kl::uint2(2, 1));
-			const kl::image bottom = image.get_square(part_size * kl::uint2(1, 2), part_size * kl::uint2(2, 3));
-			return game::gpu->new_shader_view(game::gpu->new_texture(front, back, left, right, top, bottom));
-		}
-	}
-	kl::assert(false, "Texture has unsupported ratio!");
-	return nullptr;
+    auto& gpu = conguess.gpu;
+
+    mesh = gpu.create_cube_mesh( 1.0f );
+    raster_state = gpu.create_raster_state( false, false );
+    load_shaders( gpu, "skybox", shaders );
+    load_box_texture( gpu, "textures/stars_milky.jpg", texture );
+    sampler = gpu.create_sampler_state( true, false );
 }
 
-void skybox::initialize()
+void ConguessSkybox::update()
 {
-	depth_state = game::gpu->new_depth_state(false, false, false);
+    auto& gpu = conguess.gpu;
 
-	game::log("Compiling skybox shaders");
-	shaders = game::gpu->new_shaders(kl::files::read_string("source/shaders/skybox.hlsl"));
+    gpu.bind_target_depth_view( conguess.render_target_view, {} );
+    gpu.bind_raster_state( raster_state );
 
-	game::log("Loading box mesh");
-	mesh = game::gpu->new_vertex_buffer("resource/meshes/cube.obj", true);
+    gpu.bind_shader_view_for_pixel_shader( texture, 0 );
+    gpu.bind_sampler_state_for_pixel_shader( sampler, 0 );
 
-	game::log("Loading skybox texture");
-	texture = process_box_image(kl::image(std::string("resource/textures/stars_milky.png")));
+    struct alignas( 16 ) CB
+    {
+        float4x4 VP;
+        float3 SUN_DIRECTION;
+    } cb = {};
+
+    cb.VP = conguess.camera.matrix();
+    cb.SUN_DIRECTION = kl::normalize( conguess.earth.sun_direction );
+
+    shaders.upload( cb );
+    gpu.bind_shaders( shaders );
+
+    gpu.draw( mesh );
 }
 
-void skybox::update()
+void load_box_texture( kl::GPU& gpu, std::string_view const& path, kl::dx::ShaderView& out_sv )
 {
-	game::gpu->clear_target_view(render::render_target_view, kl::float4(kl::colors::gray));
-
-	game::gpu->bind_targets({ render::render_target_view });
-	game::gpu->bind_depth_state(depth_state);
-	
-	game::gpu->bind_shaders(shaders);
-	game::gpu->bind_pixel_shader_view(texture, 0);
-	game::gpu->set_vertex_const_buffer(game::camera.matrix());
-	
-	game::gpu->draw_vertex_buffer(mesh);
+    log( "Loading cube image ", path );
+    kl::Texture box_texture{ gpu };
+    box_texture.image.load_from_file( path );
+    if ( box_texture.image.pixel_count() == 0 )
+    {
+        log_error( "Failed to load cube image ", path );
+        return;
+    }
+    if ( box_texture.image.width() % 4 != 0 || box_texture.image.height() % 3 != 0 )
+    {
+        log_error( "Cube image ", path, " has unsupported ratio" );
+        return;
+    }
+    log( "Loading cube texture ", path );
+    if ( !box_texture.reload_as_cube() )
+    {
+        log_error( "Failed to load cube texture ", path );
+        return;
+    }
+    log( "Creating cube shader view ", path );
+    box_texture.create_shader_view();
+    if ( !box_texture.shader_view )
+    {
+        log_error( "Failed to create cube shader view ", path );
+        return;
+    }
+    out_sv = box_texture.shader_view;
+    log_success( "Cube texture ", path, " is good." );
 }

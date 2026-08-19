@@ -1,22 +1,35 @@
 #pragma once
 
-#include "klib.h"
+#include "helper.h"
 
 
-namespace game
+struct ConguessGame
 {
-	inline kl::ref<kl::window> window = {};
-	inline kl::ref<kl::gpu> gpu = {};
-	inline kl::camera camera = {};
-	inline kl::timer timer = {};
+    Conguess& conguess;
 
-	inline kl::float3 sphere_rotation = {};
-	inline kl::float3 sun_direction = { 1.0f, -1.0f, 1.0f };
+    double min_allowed_poly_area = 20'000.0;
+    int hightlight_at_fail_count = 3;
 
-	inline int last_random_country = -1;
-	inline int player_score = 0;
+    ConguessGame( Conguess& conguess );
 
-	void log(const std::string& message);
-	void log_play_stats();
-	void new_random_country();
-}
+    void play_country( int index );
+    void reset();
+
+    int current_rand() const;
+    int play_count() const;
+    int fail_count() const;
+    int player_score() const;
+
+    bool is_correct( int index ) const;
+    bool should_highlight() const;
+
+private:
+    std::vector<int> m_possible_countries;
+    int m_random_country = 0;
+    int m_play_count = 0;
+    int m_fail_count = 0;
+    int m_player_score = 0;
+
+    void gen_possible();
+    void new_random_country();
+};

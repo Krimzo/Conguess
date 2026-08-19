@@ -1,36 +1,51 @@
-#include "postprocess.h"
-
-#include "render.h"
-#include "game.h"
+#include "conguess.h"
 
 
-void postprocess::initialize()
+ConguessPostprocess::ConguessPostprocess( Conguess& conguess )
+    : conguess( conguess )
 {
-	depth_state = game::gpu->new_depth_state(false, false, false);
+    auto& gpu = conguess.gpu;
 
-	game::log("Compiling postprocess shaders");
-	shaders = game::gpu->new_shaders(kl::files::read_string("source/shaders/postprocess.hlsl"));
-
-	game::log("Loading screen mesh");
-	mesh = game::gpu->generate_screen_mesh();
+    mesh = gpu.create_screen_mesh();
+    raster_state = gpu.create_raster_state( false, false );
+    depth_state = gpu.create_depth_state( false, false, false );
+    load_shaders( gpu, "postprocess", shaders );
+    sampler = gpu.create_sampler_state( true, false );
 }
 
-void postprocess::update()
+void ConguessPostprocess::update()
 {
-	game::gpu->bind_internal_targets();
-	game::gpu->bind_depth_state(depth_state);
-	game::gpu->bind_shaders(shaders);
+    auto& gpu = conguess.gpu;
 
-	game::gpu->bind_pixel_shader_view(render::render_shader_view, 0);
-	game::gpu->bind_pixel_shader_view(render::index_shader_view, 1);
+    gpu.bind_internal_views();
+    gpu.bind_raster_state( raster_state );
+    gpu.bind_depth_state( depth_state );
 
-	const kl::float4 misc_data = {
-		static_cast<float>(render_bounds),
-		static_cast<float>(game::window->mouse.left.state()),
-		0.0f,
-		0.0f
-	};
-	game::gpu->set_pixel_const_buffer(misc_data);
+    gpu.bind_shader_view_for_pixel_shader( conguess.render_shader_view, 0 );
+    gpu.bind_shader_view_for_pixel_shader( conguess.info_shader_view, 1 );
+    gpu.bind_sampler_state_for_pixel_shader( sampler, 0 );
 
-	game::gpu->draw_vertex_buffer(mesh);
+    struct alignas( 16 ) CB
+    {
+        float4 HIGHLIGHT_COUNTRY_COLOR_MULTI;
+        float4 HOVER_COUNTRY_COLOR_MULTI;
+        float4 HOLD_COUNTRY_COLOR_MULTI;
+        float4 BORDER_COLOR;
+        float RENDER_BORDERS;
+        float RENDER_ATMOSPHERE;
+        float MOUSE_LMB;
+    } cb = {};
+
+    cb.HIGHLIGHT_COUNTRY_COLOR_MULTI = highlight_country_color_multi;
+    cb.HOVER_COUNTRY_COLOR_MULTI = hover_country_color_multi;
+    cb.HOLD_COUNTRY_COLOR_MULTI = hold_country_color_multi;
+    cb.BORDER_COLOR = border_color;
+    cb.RENDER_BORDERS = render_borders;
+    cb.RENDER_ATMOSPHERE = conguess.game.should_highlight() ? false : render_atmosphere;
+    cb.MOUSE_LMB = conguess.window.mouse.left;
+
+    shaders.upload( cb );
+    gpu.bind_shaders( shaders );
+
+    gpu.draw( mesh );
 }
