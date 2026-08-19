@@ -53,7 +53,7 @@ void ConguessUI::update()
     keybinds.push_back( Keybind{ .key = "b", .description = "Toggle Borders", .is_toggle = true, .state = postprocess.render_borders } );
     keybinds.push_back( Keybind{ .key = "c", .description = "Toggle Clouds", .is_toggle = true, .state = earth.render_clouds } );
     keybinds.push_back( Keybind{ .key = "r", .description = "Reset Game", .is_toggle = false } );
-    keybinds.push_back( Keybind{ .key = "m", .description = "Move Camera", .is_toggle = true, .state = input.rotate_camera_y } );
+    keybinds.push_back( Keybind{ .key = "m", .description = "Toggle Camera Rotation", .is_toggle = true, .state = input.rotate_camera_y } );
     keybinds.push_back( Keybind{ .key = "f11", .description = "Toggle Fullscreen", .is_toggle = false } );
     keybinds.push_back( Keybind{ .key = "esc", .description = "Exit Game", .is_toggle = false } );
 
