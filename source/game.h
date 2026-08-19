@@ -24,10 +24,12 @@ struct ConguessGame
     bool should_highlight() const;
 
 private:
+    std::vector<int> m_possible_countries;
     int m_random_country = 0;
     int m_play_count = 0;
     int m_fail_count = 0;
     int m_player_score = 0;
 
+    void gen_possible();
     void new_random_country();
 };

@@ -25,10 +25,11 @@ void ConguessGame::play_country( int index )
 
 void ConguessGame::reset()
 {
-    log( "Game Reset." );
-    new_random_country();
     m_play_count = 0;
     m_player_score = 0;
+    gen_possible();
+    log( "Game Reset." );
+    new_random_country();
 }
 
 int ConguessGame::current_rand() const
@@ -61,15 +62,29 @@ bool ConguessGame::should_highlight() const
     return m_fail_count >= hightlight_at_fail_count;
 }
 
+void ConguessGame::gen_possible()
+{
+    auto& country_data = conguess.country_data;
+    m_possible_countries.clear();
+    for ( int i = 0; i < country_data.countries.size(); i++ )
+    {
+        auto& country = country_data.countries[i];
+        if ( country.max_poly_area < min_allowed_poly_area )
+            continue;
+        m_possible_countries.emplace_back( i + 1 );
+    }
+}
+
 void ConguessGame::new_random_country()
 {
-    m_fail_count = 0;
-    auto& countries = conguess.country_data.countries;
-    const int old_random_country = m_random_country;
-    do
+    if ( m_possible_countries.empty() )
     {
-        m_random_country = kl::random::gen_int( (int) countries.size() ) + 1;
+        this->reset();
+        return;
     }
-    while ( m_random_country == old_random_country || countries[(size_t) m_random_country - 1].max_poly_area < min_allowed_poly_area );
-    log( "New Random Country Is: ", countries[(size_t) m_random_country - 1].name );
+    m_fail_count = 0;
+    const int rand_index = kl::random::gen_int( (int) m_possible_countries.size() );
+    m_random_country = m_possible_countries[rand_index];
+    m_possible_countries.erase( m_possible_countries.begin() + rand_index );
+    log( "New Random Country Is: ", conguess.country_data.countries[(size_t) m_random_country - 1].name );
 }

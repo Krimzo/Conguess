@@ -1,2 +1,1 @@
-remove already guessed countries until all are guessed, then reset
 add new screenshots
