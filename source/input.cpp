@@ -7,19 +7,10 @@ ConguessInput::ConguessInput( Conguess& conguess )
 
 void ConguessInput::update()
 {
-    static constexpr float MIN_CAMERA_DISTANCE = 1.05f;
-    static constexpr float VERTICAL_ANGLE_LIMIT = 85.0f;
-    static constexpr float SCROLL_MULTI = 0.05f;
-    static constexpr kl::Float2 ANGLE_MULTI{ 0.1f };
-    static constexpr kl::Sphere EARTH_SPHERE{ {}, 1.0f };
-
     auto& window = conguess.window;
     auto& mouse = window.mouse;
     auto& keyboard = window.keyboard;
     auto& camera = conguess.camera;
-
-    camera_distance -= mouse.scroll() * SCROLL_MULTI;
-    camera_distance = kl::max( camera_distance, MIN_CAMERA_DISTANCE );
 
     const auto save_originals = [&]
         {
@@ -30,34 +21,19 @@ void ConguessInput::update()
             original_mouse_pos = mouse.position();
         };
 
-    if ( mouse.right.pressed() && !mouse.middle.pressed() && !mouse.middle )
-        save_originals();
-    if ( mouse.right )
-    {
-        const kl::Int2 mouse_delta = mouse.position() - original_mouse_pos;
-        const kl::Float2 rotation_delta = ANGLE_MULTI * mouse_delta;
-        auto& rotation_x = camera_rotation.x;
-        auto& rotation_y = rotate_camera_y ? camera_rotation.y : earth_rotation.y;
-        rotation_x = kl::clamp( original_rotations.x + rotation_delta.y, -VERTICAL_ANGLE_LIMIT, VERTICAL_ANGLE_LIMIT );
-        rotation_y = original_rotations.y + ( rotate_camera_y ? rotation_delta.x : -rotation_delta.x );
-        if ( rotation_x == -VERTICAL_ANGLE_LIMIT || rotation_x == VERTICAL_ANGLE_LIMIT )
-            save_originals();
-    }
-
-    mouse_geo_location.reset();
     mouse_country_index.reset();
 
-    kl::Float3 mouse_earth_intersect;
     const kl::Ray mouse_ray{ camera.position, kl::inverse( camera.matrix() ), mouse.ndc_pos() };
-    if ( mouse_ray.intersect_sphere( EARTH_SPHERE, &mouse_earth_intersect ) )
+    if ( const auto opt_inter = mouse_ray.intersect_sphere( EARTH_SPHERE ) )
     {
-        auto& mouse_geo_location = this->mouse_geo_location.emplace();
+        auto const& mouse_earth_inter = *opt_inter;
+        kl::Float2 mouse_geo_location;
 
-        mouse_geo_location.x = kl::angle( mouse_earth_intersect, { mouse_earth_intersect.x, 0.0f, mouse_earth_intersect.z } );
-        mouse_geo_location.x *= mouse_earth_intersect.y < 0.0f ? -1.0f : 1.0f;
+        mouse_geo_location.x = kl::angle( mouse_earth_inter, { mouse_earth_inter.x, 0.0f, mouse_earth_inter.z } );
+        mouse_geo_location.x *= mouse_earth_inter.y < 0.0f ? -1.0f : 1.0f;
 
         const kl::Float3 greenwich = ( kl::Float4x4::rotation( earth_rotation ) * kl::Float4{ 0.0f, 0.0f, 1.0f, 1.0f } ).xyz();
-        mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_intersect.x, mouse_earth_intersect.z }, true );
+        mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_inter.x, mouse_earth_inter.z }, true );
         mouse_geo_location.y -= 180.0f;
 
         for ( int i = 0; i < (int) conguess.country_data.countries.size(); i++ )
@@ -74,10 +50,6 @@ void ConguessInput::update()
         }
     country_loop_end:;
     }
-
-    const kl::Float4 back_vector = { 0.0f, 0.0f, -camera_distance, 1.0f };
-    camera.position = ( kl::Float4x4::rotation( camera_rotation ) * back_vector ).xyz();
-    camera.set_forward( -camera.position );
 
     if ( keyboard.a.pressed() )
         conguess.postprocess.render_atmosphere = !conguess.postprocess.render_atmosphere;
@@ -97,6 +69,10 @@ void ConguessInput::update()
     if ( keyboard.esc.pressed() )
         conguess.window.close();
 
+    camera_distance -= mouse.scroll() * SCROLL_MULTI;
+    camera_distance = kl::max( camera_distance, MIN_CAMERA_DISTANCE );
+    const float camera_deg_per_px = calc_deg_per_px();
+
     if ( mouse.left.pressed() )
     {
         original_mouse_country = mouse_country_index.value_or( -1 );
@@ -111,4 +87,31 @@ void ConguessInput::update()
         else
             conguess.postprocess.hold_country_color_multi = NEUTRAL_HOLD_COLOR;
     }
+
+    if ( mouse.right.pressed() )
+        save_originals();
+    if ( mouse.right )
+    {
+        const kl::Float2 mouse_delta = mouse.position() - original_mouse_pos;
+        const kl::Float2 rotation_delta = {
+            mouse_delta.y * camera_deg_per_px,
+            mouse_delta.x * camera_deg_per_px };
+        auto& rotation_x = camera_rotation.x;
+        auto& rotation_y = rotate_camera_y ? camera_rotation.y : earth_rotation.y;
+        rotation_x = kl::clamp( original_rotations.x + rotation_delta.x, -VERTICAL_ANGLE_LIMIT, VERTICAL_ANGLE_LIMIT );
+        rotation_y = original_rotations.y + ( rotate_camera_y ? rotation_delta.y : -rotation_delta.y );
+        if ( rotation_x == -VERTICAL_ANGLE_LIMIT || rotation_x == VERTICAL_ANGLE_LIMIT )
+            save_originals();
+    }
+
+    const kl::Float4 back_vector = { 0.0f, 0.0f, -camera_distance, 1.0f };
+    camera.position = ( kl::Float4x4::rotation( camera_rotation ) * back_vector ).xyz();
+    camera.set_forward( -camera.position );
+}
+
+float ConguessInput::calc_deg_per_px() const
+{
+    constexpr kl::Float2 p1 = { 1.0f, 0.0f };
+    constexpr kl::Float2 p2 = { TESTED_CAM_DIST, ANGLE_MULTI };
+    return kl::line_y( p1, p2, camera_distance );
 }

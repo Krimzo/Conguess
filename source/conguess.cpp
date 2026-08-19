@@ -6,12 +6,11 @@ Conguess::Conguess()
     window.set_icon( "textures/icon.ico" );
     window.on_resize.emplace_back( [&]( kl::Int2 size )
         {
-            const float original_ar = camera.aspect_ratio;
             gpu.resize_internal( size );
             gpu.set_viewport_size( size );
             camera.update_aspect_ratio( size );
+            camera.set_v_fov( 45.0f );
             this->resize( size );
-            input.camera_distance *= camera.aspect_ratio / original_ar;
         } );
     window.resize( kl::Int2{ kl::SCREEN_SIZE.y * 9 / 10 } );
     window.set_position( kl::SCREEN_SIZE / 2 - window.size() / 2 );

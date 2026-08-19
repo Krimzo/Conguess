@@ -1,2 +1,2 @@
-improve mouse rotation so it scales with zoom
-add polygon struct to klibrary
+add keybind display when esc is pressed (and exit button)
+add new screenshots

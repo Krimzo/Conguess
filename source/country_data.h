@@ -3,20 +3,10 @@
 #include "helper.h"
 
 
-struct tPolygon
-{
-    std::vector<kl::Float2> coords;
-
-    bool contains( kl::Float2 point ) const;
-
-    double area() const;
-    double spherical_area( double radius ) const;
-};
-
 struct Country
 {
     std::string name;
-    std::vector<tPolygon> polygons;
+    std::vector<kl::Polygon> polygons;
 
     double max_poly_area = 0.0;
     double total_area = 0.0;

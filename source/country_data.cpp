@@ -3,52 +3,6 @@
 
 static constexpr kl::RGB BORDER_COLOR = kl::colors::WHITE;
 
-bool tPolygon::contains( kl::Float2 point ) const
-{
-    bool inside = false;
-    const int n = (int) this->coords.size();
-    for ( int i = 0; i < n; i++ )
-    {
-        kl::Float2 const& p1 = coords[i];
-        kl::Float2 const& p2 = coords[size_t( i + 1 ) % n];
-        if ( ( p1.y > point.y ) == ( p2.y > point.y ) )
-            continue;
-
-        const float x_intersect = ( p2.x - p1.x ) * ( point.y - p1.y ) / ( p2.y - p1.y ) + p1.x;
-        if ( x_intersect < point.x )
-            continue;
-
-        inside = !inside;
-    }
-    return inside;
-}
-
-double tPolygon::area() const
-{
-    double area = 0.0;
-    const size_t n = coords.size();
-    for ( size_t i = 0; i < n; i++ )
-    {
-        auto const& p1 = coords[i];
-        auto const& p2 = coords[( i + 1 ) % n];
-        area += 0.5 * ( p1.x * p2.y - p2.x * p1.y );
-    }
-    return kl::abs( area );
-}
-
-double tPolygon::spherical_area( double radius ) const
-{
-    double sum = 0.0;
-    const size_t n = coords.size();
-    for ( size_t i = 0; i < n; i++ )
-    {
-        const double lon_prev = kl::to_radians<double>() * coords[( i + n - 1 ) % n].y;
-        const double lon_next = kl::to_radians<double>() * coords[( i + 1 ) % n].y;
-        sum += ( lon_next - lon_prev ) * kl::sin_d<double>( coords[i].x );
-    }
-    return kl::abs( sum ) * radius * radius * 0.5;
-}
-
 void Country::compute_area()
 {
     static constexpr double EARTH_RADIUS = 6371.0;
@@ -64,7 +18,7 @@ void Country::compute_area()
 
 kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords );
 kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point );
-kl::Float4 min_max_coords( tPolygon const& polygon );
+kl::Float4 min_max_coords( kl::Polygon const& polygon );
 kl::RGB int_to4_value_color( int value );
 void draw_indices( std::vector<Country> const& countries, kl::Image& out_image );
 void read_country_data( std::string_view const& path, std::vector<Country>& out_countries );
@@ -122,7 +76,7 @@ kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point )
     };
 }
 
-kl::Float4 min_max_coords( tPolygon const& polygon )
+kl::Float4 min_max_coords( kl::Polygon const& polygon )
 {
     kl::Float4 res = {
         -std::numeric_limits<float>::infinity(),
