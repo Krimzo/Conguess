@@ -42,18 +42,18 @@ void ConguessEarth::update()
 
     struct alignas( 16 ) CB
     {
-        kl::Float4x4 W;
-        kl::Float4x4 VP;
-        kl::Float3 SUN_DIRECTION;
+        float4x4 W;
+        float4x4 VP;
+        float3 SUN_DIRECTION;
         float ELAPSED_TIME;
-        kl::Float3 CAMERA_POSITION;
+        float3 CAMERA_POSITION;
         float RENDER_CLOUDS;
         int CURRENT_RAND_COUNTRY;
         int MOUSE_COUNTRY;
         int HIGHLIGHT_CURRENT;
     } cb = {};
 
-    cb.W = kl::Float4x4::rotation( conguess.input.earth_rotation );
+    cb.W = float4x4::rotation( conguess.input.earth_rotation );
     cb.VP = conguess.camera.matrix();
     cb.SUN_DIRECTION = kl::normalize( sun_direction );
     cb.ELAPSED_TIME = conguess.timer.elapsed() / 1800.0f;

@@ -4,7 +4,7 @@
 Conguess::Conguess()
 {
     window.set_icon( "textures/icon.ico" );
-    window.on_resize.emplace_back( [&]( kl::Int2 size )
+    window.on_resize.emplace_back( [&]( int2 size )
         {
             gpu.resize_internal( size );
             gpu.set_viewport_size( size );
@@ -12,7 +12,7 @@ Conguess::Conguess()
             camera.set_v_fov( 45.0f );
             this->resize( size );
         } );
-    window.resize( kl::Int2{ kl::SCREEN_SIZE.y * 9 / 10 } );
+    window.resize( int2{ kl::SCREEN_SIZE.y * 9 / 10 } );
     window.set_position( kl::SCREEN_SIZE / 2 - window.size() / 2 );
     if ( LOGGER.total_error_count() == 0 )
         gpu.set_fullscreen( true );
@@ -34,7 +34,7 @@ bool Conguess::update()
     return window.process();
 }
 
-void Conguess::resize( kl::Int2 size )
+void Conguess::resize( int2 size )
 {
     gpu.bind_internal_views();
     gpu.unbind_shader_view_for_pixel_shader( 0 );

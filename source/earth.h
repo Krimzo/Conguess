@@ -3,9 +3,9 @@
 #include "helper.h"
 
 
-inline constexpr kl::Float4 NEUTRAL_HOLD_COLOR = { 2.0f, 2.0f, 2.0f, 1.0f };
-inline constexpr kl::Float4 CORRECT_HOLD_COLOR = { 1.0f, 2.0f, 1.0f, 1.0f };
-inline constexpr kl::Float4 WRONG_HOLD_COLOR = { 2.0f, 1.0f, 1.0f, 1.0f };
+inline constexpr float4 NEUTRAL_HOLD_COLOR = { 2.0f, 2.0f, 2.0f, 1.0f };
+inline constexpr float4 CORRECT_HOLD_COLOR = { 1.0f, 2.0f, 1.0f, 1.0f };
+inline constexpr float4 WRONG_HOLD_COLOR = { 2.0f, 1.0f, 1.0f, 1.0f };
 
 struct ConguessEarth
 {
@@ -25,7 +25,7 @@ struct ConguessEarth
     kl::dx::SamplerState linear_sampler;
     kl::dx::SamplerState direct_sampler;
 
-    kl::Float3 sun_direction{ 1.0f, -1.0f, 1.0f };
+    float3 sun_direction{ 1.0f, -1.0f, 1.0f };
     bool render_clouds = true;
 
     ConguessEarth( Conguess& conguess );

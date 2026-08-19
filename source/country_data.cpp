@@ -16,9 +16,9 @@ void Country::compute_area()
     }
 }
 
-kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords );
-kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point );
-kl::Float4 min_max_coords( kl::Polygon const& polygon );
+int2 coords_to_point( int2 image_size, float2 coords );
+float2 point_to_coords( int2 image_size, int2 point );
+float4 min_max_coords( kl::Polygon const& polygon );
 kl::RGB int_to4_value_color( int value );
 void draw_indices( std::vector<Country> const& countries, kl::Image& out_image );
 void read_country_data( std::string_view const& path, std::vector<Country>& out_countries );
@@ -60,7 +60,7 @@ std::string const& ConguessCountryData::get_name( int index ) const
     return countries[index].name;
 }
 
-kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords )
+int2 coords_to_point( int2 image_size, float2 coords )
 {
     return {
         int( ( coords.y + 180.0f ) / 360.0f * ( image_size.x - 1 ) ),
@@ -68,7 +68,7 @@ kl::Int2 coords_to_point( kl::Int2 image_size, kl::Float2 coords )
     };
 }
 
-kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point )
+float2 point_to_coords( int2 image_size, int2 point )
 {
     return {
         ( image_size.y - 1 - point.y ) / ( image_size.y - 1.0f ) * 180.0f - 90.0f,
@@ -76,9 +76,9 @@ kl::Float2 point_to_coords( kl::Int2 image_size, kl::Int2 point )
     };
 }
 
-kl::Float4 min_max_coords( kl::Polygon const& polygon )
+float4 min_max_coords( kl::Polygon const& polygon )
 {
-    kl::Float4 res = {
+    float4 res = {
         -std::numeric_limits<float>::infinity(),
         std::numeric_limits<float>::infinity(),
         std::numeric_limits<float>::infinity(),
@@ -118,14 +118,14 @@ void draw_indices( std::vector<Country> const& countries, kl::Image& out_image )
         const kl::RGB index_color = { byte( i + 1 ), 0, 0 };
         for ( auto const& polygon : countries[i].polygons )
         {
-            const kl::Float4 square_bounds = min_max_coords( polygon );
-            const kl::Int2 top_left = coords_to_point( out_image.size(), kl::Float2{ square_bounds.x, square_bounds.y } );
-            const kl::Int2 bottom_right = coords_to_point( out_image.size(), kl::Float2{ square_bounds.z, square_bounds.w } );
+            const float4 square_bounds = min_max_coords( polygon );
+            const int2 top_left = coords_to_point( out_image.size(), float2{ square_bounds.x, square_bounds.y } );
+            const int2 bottom_right = coords_to_point( out_image.size(), float2{ square_bounds.z, square_bounds.w } );
             const int width = bottom_right.x - top_left.x + 1;
             const int height = bottom_right.y - top_left.y + 1;
             kl::async_for( 0, width * height, [&]( int i )
                 {
-                    const kl::Int2 point = top_left + kl::Int2::from_index( i, width );
+                    const int2 point = top_left + int2::from_index( i, width );
                     if ( out_image[point] != kl::RGB{} )
                         return;
                     if ( polygon.contains( point_to_coords( out_image.size(), point ) ) )
@@ -233,15 +233,15 @@ void generate_border_map( std::vector<Country> const& countries, std::string_vie
     const kl::Image image_copy = image;
     kl::async_for( 0, image_copy.pixel_count(), [&]( int i )
         {
-            const kl::Int2 point = kl::Int2::from_index( i, image_copy.width() );
+            const int2 point = int2::from_index( i, image_copy.width() );
             const kl::RGB index_color = image_copy[point];
             if ( index_color == kl::RGB{} )
                 return;
-            for ( kl::Int2 offset{ -1 }; offset.y <= 1; offset.y++ )
+            for ( int2 offset{ -1 }; offset.y <= 1; offset.y++ )
             {
                 for ( offset.x = -1; offset.x <= 1; offset.x++ )
                 {
-                    const kl::Int2 offset_point = point + offset;
+                    const int2 offset_point = point + offset;
                     if ( !image_copy.in_bounds( offset_point ) || image_copy[offset_point] != index_color )
                     {
                         image[point] = BORDER_COLOR;

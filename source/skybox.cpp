@@ -27,8 +27,8 @@ void ConguessSkybox::update()
 
     struct alignas( 16 ) CB
     {
-        kl::Float4x4 VP;
-        kl::Float3 SUN_DIRECTION;
+        float4x4 VP;
+        float3 SUN_DIRECTION;
     } cb = {};
 
     cb.VP = conguess.camera.matrix();

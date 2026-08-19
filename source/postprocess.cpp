@@ -27,10 +27,10 @@ void ConguessPostprocess::update()
 
     struct alignas( 16 ) CB
     {
-        kl::Float4 HIGHLIGHT_COUNTRY_COLOR_MULTI;
-        kl::Float4 HOVER_COUNTRY_COLOR_MULTI;
-        kl::Float4 HOLD_COUNTRY_COLOR_MULTI;
-        kl::Float4 BORDER_COLOR;
+        float4 HIGHLIGHT_COUNTRY_COLOR_MULTI;
+        float4 HOVER_COUNTRY_COLOR_MULTI;
+        float4 HOLD_COUNTRY_COLOR_MULTI;
+        float4 BORDER_COLOR;
         float RENDER_BORDERS;
         float RENDER_ATMOSPHERE;
         float MOUSE_LMB;

@@ -14,13 +14,13 @@ struct ConguessInput
 
     Conguess& conguess;
 
-    kl::Float3 earth_rotation{ 0.0f, 180.0f, 0.0f };
-    kl::Float3 camera_rotation{ 45.0f, 0.0f, 0.0f };
+    float3 earth_rotation{ 0.0f, 180.0f, 0.0f };
+    float3 camera_rotation{ 45.0f, 0.0f, 0.0f };
     float camera_distance = 3.0f;
     bool rotate_camera_y = false;
 
-    kl::Float2 original_rotations;
-    kl::Int2 original_mouse_pos;
+    float2 original_rotations;
+    int2 original_mouse_pos;
     int original_mouse_country = -1;
     bool original_is_correct = false;
 

@@ -35,5 +35,5 @@ struct Conguess
     bool update();
 
 private:
-    void resize( kl::Int2 size );
+    void resize( int2 size );
 };

@@ -18,9 +18,9 @@
     <ClCompile Include="klibrary\klibrary\source\graphics\gpu_12\gpu_12_commands.cpp" />
     <ClCompile Include="klibrary\klibrary\source\graphics\gpu_12\gpu_12_fence.cpp" />
     <ClCompile Include="klibrary\klibrary\source\graphics\gpu_12\gpu_12_queue.cpp" />
+    <ClCompile Include="klibrary\klibrary\source\graphics\raster\raster.cpp" />
     <ClCompile Include="klibrary\klibrary\source\graphics\shaders\shaders.cpp" />
     <ClCompile Include="klibrary\klibrary\source\graphics\shaders\shader_compiler.cpp" />
-    <ClCompile Include="klibrary\klibrary\source\graphics\text\text_raster.cpp" />
     <ClCompile Include="klibrary\klibrary\source\json\container\array.cpp" />
     <ClCompile Include="klibrary\klibrary\source\json\container\literal.cpp" />
     <ClCompile Include="klibrary\klibrary\source\json\container\object.cpp" />
@@ -89,9 +89,9 @@
     <ClInclude Include="klibrary\klibrary\source\graphics\gpu_12\gpu_12_fence.h" />
     <ClInclude Include="klibrary\klibrary\source\graphics\gpu_12\gpu_12_queue.h" />
     <ClInclude Include="klibrary\klibrary\source\graphics\graphics.h" />
+    <ClInclude Include="klibrary\klibrary\source\graphics\raster\raster.h" />
     <ClInclude Include="klibrary\klibrary\source\graphics\shaders\shaders.h" />
     <ClInclude Include="klibrary\klibrary\source\graphics\shaders\shader_compiler.h" />
-    <ClInclude Include="klibrary\klibrary\source\graphics\text\text_raster.h" />
     <ClInclude Include="klibrary\klibrary\source\json\container\array.h" />
     <ClInclude Include="klibrary\klibrary\source\json\container\container.h" />
     <ClInclude Include="klibrary\klibrary\source\json\container\literal.h" />

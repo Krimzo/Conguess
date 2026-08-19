@@ -27,13 +27,13 @@ void ConguessInput::update()
     if ( const auto opt_inter = mouse_ray.intersect_sphere( EARTH_SPHERE ) )
     {
         auto const& mouse_earth_inter = *opt_inter;
-        kl::Float2 mouse_geo_location;
+        float2 mouse_geo_location;
 
         mouse_geo_location.x = kl::angle( mouse_earth_inter, { mouse_earth_inter.x, 0.0f, mouse_earth_inter.z } );
         mouse_geo_location.x *= mouse_earth_inter.y < 0.0f ? -1.0f : 1.0f;
 
-        const kl::Float3 greenwich = ( kl::Float4x4::rotation( earth_rotation ) * kl::Float4{ 0.0f, 0.0f, 1.0f, 1.0f } ).xyz();
-        mouse_geo_location.y = kl::angle( kl::Float2{ greenwich.x, greenwich.z }, kl::Float2{ mouse_earth_inter.x, mouse_earth_inter.z }, true );
+        const float3 greenwich = ( float4x4::rotation( earth_rotation ) * float4{ 0.0f, 0.0f, 1.0f, 1.0f } ).xyz();
+        mouse_geo_location.y = kl::angle( float2{ greenwich.x, greenwich.z }, float2{ mouse_earth_inter.x, mouse_earth_inter.z }, true );
         mouse_geo_location.y -= 180.0f;
 
         for ( int i = 0; i < (int) conguess.country_data.countries.size(); i++ )
@@ -92,8 +92,8 @@ void ConguessInput::update()
         save_originals();
     if ( mouse.right )
     {
-        const kl::Float2 mouse_delta = mouse.position() - original_mouse_pos;
-        const kl::Float2 rotation_delta = {
+        const float2 mouse_delta = mouse.position() - original_mouse_pos;
+        const float2 rotation_delta = {
             mouse_delta.y * camera_deg_per_px,
             mouse_delta.x * camera_deg_per_px };
         auto& rotation_x = camera_rotation.x;
@@ -104,14 +104,14 @@ void ConguessInput::update()
             save_originals();
     }
 
-    const kl::Float4 back_vector = { 0.0f, 0.0f, -camera_distance, 1.0f };
-    camera.position = ( kl::Float4x4::rotation( camera_rotation ) * back_vector ).xyz();
+    const float4 back_vector = { 0.0f, 0.0f, -camera_distance, 1.0f };
+    camera.position = ( float4x4::rotation( camera_rotation ) * back_vector ).xyz();
     camera.set_forward( -camera.position );
 }
 
 float ConguessInput::calc_deg_per_px() const
 {
-    constexpr kl::Float2 p1 = { 1.0f, 0.0f };
-    constexpr kl::Float2 p2 = { TESTED_CAM_DIST, ANGLE_MULTI };
+    constexpr float2 p1 = { 1.0f, 0.0f };
+    constexpr float2 p2 = { TESTED_CAM_DIST, ANGLE_MULTI };
     return kl::line_y( p1, p2, camera_distance );
 }

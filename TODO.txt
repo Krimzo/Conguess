@@ -1,2 +1,2 @@
-add keybind display when esc is pressed (and exit button)
+remove already guessed countries until all are guessed, then reset
 add new screenshots
