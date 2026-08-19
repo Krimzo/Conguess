@@ -1,6 +1,5 @@
 ## About
-Guess countries of the world!  
-Rendered using D3D11.
+Learn countries of the world!
 
 ## Screenshot
 ![](screen1.png)
